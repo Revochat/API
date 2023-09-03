@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    name: "ping",
-    description: "Ping the server!",
+    name: "ping2",
+    description: "Ping the server2!",
     run: (data) => {
         console.log(data);
     }
