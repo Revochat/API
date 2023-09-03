@@ -1,6 +1,0 @@
-MONGO_URL=mongodb+srv://<USERNAME>:<PASSWORD>@revochat.tzjwcwy.mongodb.net/?retryWrites=true&w=majority
-MONGO_USERNAME=revochat_db_test
-MONGO_PASSWORD=HWGbWB1cToYfcj9G
-
-BASE_URI=https://revochat.org
-
