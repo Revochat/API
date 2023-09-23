@@ -10,13 +10,11 @@ import path from 'path';
 dotenv.config()
 
 export class Autoload { // This is the class that starts the server
-    static socket = new Socket.Server()
+    static socket: Socket.Server = new Socket.Server(6000);
     static port: number;
-    static app = http.createServer()
     static baseDir = path.resolve(__dirname, "../socket");  
     constructor() {
         Autoload.port = Number(process.env.APP_PORT) || 3000
-        Autoload.app.listen(Autoload.port)
         //Autoload.app.use(Autoload.rateLimiter)
         Autoload.start()
         Logger.success("Server started on port " + Autoload.port)
@@ -35,21 +33,33 @@ export class Autoload { // This is the class that starts the server
 
     }
 
-    protected static iterate = (folderPath: string = Autoload.baseDir): void => {
-        const routes = fs.readdirSync(folderPath).filter((file) => file.endsWith(".socket.ts"));
+    protected static autoloadFilesFromDirectory(directory: string): any[] {
+        const handlers: any[] = [];
+        const files = fs.readdirSync(directory);
     
-        for (const file of routes) {
-            const routePath = path.join(folderPath, file);
-            const route = require(routePath).default;
-            Autoload.socket.on(route.name, route.run);
-            Logger.success(`Loaded socket ${route.name}`);
-            Logger.info(`Description: ${route.description}`);
+        for (const file of files) {
+            const fullPath = path.join(directory, file);
+    
+            // Si c'est un dossier, appelez la fonction récursivement
+            if (fs.statSync(fullPath).isDirectory()) {
+                handlers.push(...Autoload.autoloadFilesFromDirectory(fullPath));
+            } else if (file.endsWith('.ts')) {
+                // Si c'est un fichier TypeScript, chargez-le
+                const handler = require(fullPath).default;
+                handlers.push(handler);
+            }
         }
     
-        const folders = fs.readdirSync(folderPath).filter((folder) => !folder.endsWith(".socket.ts") && fs.statSync(path.join(folderPath, folder)).isDirectory());
+        return handlers;
+    }
     
-        for (const subFolder of folders) {
-            Autoload.iterate(path.join(folderPath, subFolder));
+    protected static attachHandlersToSocket(socket: Socket.Socket) {
+        const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
+        Logger.info(`Loading ${handlers.length} socket handlers...`);
+        for (const handler of handlers) {
+            if (handler.name && typeof handler.run === 'function') {
+                socket.on(handler.name, (message: any) => handler.run(socket, message));
+            }
         }
     }
     
@@ -58,8 +68,9 @@ export class Autoload { // This is the class that starts the server
         Logger.beautifulSpace()
         Logger.info("Starting server...")
         DB_Connect().then(() => {
-            Autoload.iterate()
-            Autoload.socket.listen(Autoload.app)
+            Autoload.socket.on("connection", (socket: Socket.Socket) => {
+                Autoload.attachHandlersToSocket(socket);
+            });
             Logger.beautifulSpace()
             Autoload.logInfo()
             Logger.beautifulSpace()
