@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    name: "hello",
-    description: "Ping the server!",
-    run: (socket, message) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(socket.revo);
+    name: "login",
+    description: "Register a new user",
+    run: (socket, data) => __awaiter(void 0, void 0, void 0, function* () {
+        socket.to(socket.revo.socket_id).emit("register", "Hi client from server !" + data);
     })
 };
