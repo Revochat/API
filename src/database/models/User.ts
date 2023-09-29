@@ -8,14 +8,14 @@ export interface RevoUser {
     wallet_token: number | null;
     username: string;
     password: string;
-    premium_expiration: string;
+    premium_expiration: Date | null;
     avatar: string;
 
     message_privacy: "everyone" | "friends";
     status: "online" | "offline" | "idle" | "dnd";
-    updated_at: string;
-    created_at: string;
-    last_connection: string;
+    updated_at: Date;
+    created_at: Date;
+    last_connection: Date;
 
     servers: number[];
     channels: number[];
@@ -35,14 +35,14 @@ const RevoUserSchema = new Schema({
     wallet_token: {type: Number, required: false},
     username: {type: String, required: true},
     password: {type: String, required: true},
-    premium_expiration: {type: String, required: false, default: null},
+    premium_expiration: {type: Date, required: false, default: null},
     avatar: {type: String, required: false, default: "default"},
 
     message_privacy: {type: String, required: true, default: "everyone"},
     status: {type: String, required: true, default: "offline"},
-    updated_at: {type: String, required: true, default: new Date().toLocaleString()},
-    created_at: {type: String, required: true, default: new Date().toLocaleString()},
-    last_connection: {type: String, required: true, default: new Date().toLocaleString()},
+    updated_at: {type: Date, required: true, default: new Date()},
+    created_at: {type: Date, required: true, default: new Date()},
+    last_connection: {type: Date, required: true, default: new Date()},
 
     servers: {type: Array, required: true, default: []},
     channels: {type: Array, required: true, default: []},
