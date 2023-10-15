@@ -5,7 +5,6 @@ export interface RevoUser {
     identifier: string;
     token: string;
 
-    wallet_token: number | null;
     username: string;
     password: string;
     premium_expiration: Date | null;
@@ -32,7 +31,6 @@ const RevoUserSchema = new Schema({
     identifier: {type: String, required: true},
     token: {type: String, required: true},
 
-    wallet_token: {type: Number, required: false},
     username: {type: String, required: true},
     password: {type: String, required: true},
     premium_expiration: {type: Date, required: false, default: null},

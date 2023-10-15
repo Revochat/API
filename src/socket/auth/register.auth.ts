@@ -10,7 +10,7 @@ export default {
         if(!data.username) return socket.emit("register", "Please provide a username")
         if(!data.password) return socket.emit("register", "Please provide a password")
         
-        const asciiUsername = UTILS.VERIFY.STRING.default.ASCII(data.username)
+        const asciiUsername = data.username
 
         const user = await User.findOne({username: asciiUsername})
 

@@ -1,5 +1,5 @@
-import { ASCII } from "./ASCII";
+
 
 export default {
-    ASCII: ASCII
+    ASCII: 0
 }

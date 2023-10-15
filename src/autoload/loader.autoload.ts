@@ -11,7 +11,7 @@ import { redefineSocket } from "./socket_struct.autoload";
 dotenv.config()
 
 export class Autoload { // This is the class that starts the server
-    static socket: Socket.Server = new Socket.Server(6000);
+    static socket: Socket.Server = new Socket.Server(3000);
     static port: number;
     static baseDir = path.resolve(__dirname, "../socket");
     
