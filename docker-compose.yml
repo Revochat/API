@@ -1,0 +1,8 @@
+version: "3"
+services:
+  api:
+    build: . # build from Dockerfile in current directory
+    ports: # map port 3000 to 3000
+      - "3000:3000"
+    environment: # set environment variables
+      - NODE_ENV=production
