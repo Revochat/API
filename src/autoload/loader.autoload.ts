@@ -11,7 +11,7 @@ import { redefineSocket } from "./socket_struct.autoload";
 dotenv.config()
 
 export class Autoload { // This is the class that starts the server
-    static socket: Socket.Server = new Socket.Server(3000);
+    static socket: Socket.Server = new Socket.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3000);
     static port: number;
     static baseDir = path.resolve(__dirname, "../socket");
     
@@ -101,6 +101,7 @@ export class Autoload { // This is the class that starts the server
     const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
     Logger.info(`Loading ${handlers.length} socket handlers...`);
     for (const handler of handlers) {
+        Logger.info(`Loading socket handler ${handler.name}...`);
         if (handler.name && typeof handler.run === 'function') {
             socket.on(handler.name, (message: any) => {
                 Autoload.rateLimiterMiddleware(socket, () => {
@@ -117,7 +118,7 @@ export class Autoload { // This is the class that starts the server
         Logger.beautifulSpace()
         Logger.info("Starting server...")
         DB_Connect().then(() => {
-            Autoload.socket.on("connection", (socket: Socket.Socket) => {
+            Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 Autoload.attachHandlersToSocket(socket);
             });
             Logger.beautifulSpace()
