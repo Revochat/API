@@ -12,6 +12,7 @@ const fs_1 = __importDefault(require("fs"));
 const config_1 = require("../../config");
 const path_1 = __importDefault(require("path"));
 const socket_struct_autoload_1 = require("./socket_struct.autoload");
+const express_1 = __importDefault(require("express"));
 dotenv_1.default.config();
 class Autoload {
     constructor() {
@@ -48,6 +49,29 @@ class Autoload {
         }
         handler();
     }
+    static autoloadRoutesFromDirectory(directory) {
+        const httpMethods = ["get", "post", "put", "delete", "patch", "head", "options"];
+        const files = fs_1.default.readdirSync(directory);
+        for (const file of files) {
+            const fullPath = path_1.default.join(directory, file);
+            if (fs_1.default.statSync(fullPath).isDirectory()) {
+                Autoload.autoloadRoutesFromDirectory(fullPath);
+            }
+            else if (file.endsWith('.ts')) {
+                const route = require(fullPath).default;
+                if (route && typeof route.run === 'function' && route.method && route.name) {
+                    const httpMethod = route.method.toLowerCase();
+                    if (httpMethods.includes(httpMethod)) {
+                        Autoload.app[httpMethod](`/api${route.name}`, route.run);
+                        logger_1.default.info(`Loaded route ${route.method} /api${route.name}`);
+                    }
+                    else {
+                        logger_1.default.warn(`Unknown HTTP method: ${route.method}`);
+                    }
+                }
+            }
+        }
+    }
     static autoloadFilesFromDirectory(directory) {
         const handlers = [];
         const files = fs_1.default.readdirSync(directory);
@@ -67,6 +91,7 @@ class Autoload {
         const handlers = Autoload.autoloadFilesFromDirectory(path_1.default.join(__dirname, '../socket'));
         logger_1.default.info(`Loading ${handlers.length} socket handlers...`);
         for (const handler of handlers) {
+            logger_1.default.info(`Loading socket handler ${handler.name}...`);
             if (handler.name && typeof handler.run === 'function') {
                 socket.on(handler.name, (message) => {
                     Autoload.rateLimiterMiddleware(socket, () => {
@@ -80,8 +105,14 @@ class Autoload {
         logger_1.default.beautifulSpace();
         logger_1.default.info("Starting server...");
         (0, connect_database_1.default)().then(() => {
-            Autoload.socket.on("connection", (socket) => {
+            Autoload.socket.on("connection", function (socket) {
                 Autoload.attachHandlersToSocket(socket);
+            });
+            Autoload.autoloadRoutesFromDirectory(path_1.default.join(__dirname, '../http'));
+            Autoload.app.listen(Autoload.port, () => {
+                logger_1.default.beautifulSpace();
+                Autoload.logInfo();
+                logger_1.default.beautifulSpace();
             });
             logger_1.default.beautifulSpace();
             Autoload.logInfo();
@@ -93,7 +124,8 @@ class Autoload {
     }
 }
 exports.Autoload = Autoload;
-Autoload.socket = new socket_io_1.default.Server(6000);
+Autoload.app = (0, express_1.default)();
+Autoload.socket = new socket_io_1.default.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3000);
 Autoload.baseDir = path_1.default.resolve(__dirname, "../socket");
 Autoload.rateLimitThreshold = 10000; // 5 Events par seconde
 Autoload.rateLimitDuration = 10000; // 1 seconde
