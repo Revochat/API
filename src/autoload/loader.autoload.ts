@@ -13,8 +13,8 @@ dotenv.config()
 
 export class Autoload { // This is the class that starts the server
     static app: express.Express = express();
-    static socket: Socket.Server = new Socket.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3000);
-    static port: number;
+    static socket: Socket.Server = new Socket.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3001);
+    static port: number = process.env.HTTP_PORT ? Number(process.env.APP_PORT) : 3000;
     static baseDir = path.resolve(__dirname, "../socket");
     
     static rateLimitThreshold = 10000; // 5 Events par seconde
@@ -143,16 +143,14 @@ export class Autoload { // This is the class that starts the server
         Logger.beautifulSpace()
         Logger.info("Starting server...")
         DB_Connect().then(() => {
-            Autoload.socket.on("connection", function (socket: Socket.Socket) {
-                Autoload.attachHandlersToSocket(socket);
-            });
-
             Autoload.autoloadRoutesFromDirectory(path.join(__dirname, '../http'));
 
             Autoload.app.listen(Autoload.port, () => {
-                Logger.beautifulSpace();
-                Autoload.logInfo();
-                Logger.beautifulSpace();
+                Logger.success(`Server started on port ${Autoload.port}`)
+            });
+
+            Autoload.socket.on("connection", function (socket: Socket.Socket) {
+                Autoload.attachHandlersToSocket(socket);
             });
             Logger.beautifulSpace()
             Autoload.logInfo()
