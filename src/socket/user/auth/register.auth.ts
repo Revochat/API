@@ -1,7 +1,7 @@
-import User from "../../database/models/User"
+import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
-import UTILS from "../../utils"
-import Logger from "../../logger"
+import UTILS from "../../../utils"
+import Logger from "../../../logger"
 export default {
     name: "register",
     description: "Register a new user",
