@@ -6,8 +6,8 @@ import UTILS from "../../utils"
 import Logger from "../../logger"
 
 export default {
-    name: "dm",
-    description: "DM a user!",
+    name: "send.message",
+    description: "Send a message",
     run: async function (socket: any, data: any) {
         if(!data) return socket.emit("dm", "Please provide a message")
         if(!data.user_id) return socket.emit("dm", "Please provide a user id")
@@ -16,6 +16,9 @@ export default {
         
         const user = await User.findOne({user_id: data.user_id}) // check if the user exists
         if(!user) return socket.emit("dm", "This user doesn't exist")
+
+        const blocked = socket.user.blocked.find((f: any) => f.user_id == user.user_id) // check if the user is blocked
+        if(blocked) return socket.emit("dm", "You can't send a message to this user")
 
         // check if the user is a friend of the sender
         if(!socket.user.friends.includes(user.user_id)) return socket.emit("dm", "This user isn't your friend")

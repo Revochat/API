@@ -1,4 +1,4 @@
-import User from "../../database/models/User"
+import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
 
 export default {

@@ -1,11 +1,10 @@
 import mongoose, {Document, Schema} from "mongoose";
 
 export interface RevoUser {
-    user_id: number;
-    identifier: string;
+    user_id: string; // the user id is a unique name that is used to identify the user
     token: string;
 
-    username: string;
+    username: string; // the username is the name that is displayed to the user
     password: string;
     premium_expiration: Date | null;
     avatar: string;
@@ -27,8 +26,7 @@ export interface RevoUser {
 export interface RevoUserDocument extends RevoUser, Document {}
 
 const RevoUserSchema = new Schema({
-    user_id: {type: Number, required: true},
-    identifier: {type: String, required: true},
+    user_id: {type: String, required: true},
     token: {type: String, required: true},
 
     username: {type: String, required: true},

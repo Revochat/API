@@ -43,7 +43,7 @@ export interface IChannel { // This is the interface for the channel in the data
     channel_name?: string;
     channel_type: "HYBRID" | "TEXT" | "VOICE";
     channel_category: "DM" | "GROUP" | "SERVER";
-    members: number[];
+    members: string[];
     members_count: number;
     updated_at: string;
     created_at: string;
