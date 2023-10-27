@@ -17,7 +17,7 @@ export default {
     
         socket.revo.logged = true;
         socket.revo.user = user;
-        socket.emit("login", { success: "You are now logged in" });
+        socket.emit("login", { success: "You are now logged in", user: user });
 
         return socket;
     }

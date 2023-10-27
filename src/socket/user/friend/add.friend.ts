@@ -11,7 +11,9 @@ export default {
         const friend = await User.findOne({ user_id: data.friend_id }); // find the friend
         if(!friend) return socket.emit("add.friend", { error: "User not found" });
 
+        console.log(socket.revo.user)
         const user = socket.revo.user; // get the user from the socket
+        console.log(user.user_id, friend.user_id)
         if(user.user_id == friend.user_id) return socket.emit("add.friend", { error: "You can't add yourself" });
 
         const friend_already_added = user.friends.find((f: any) => f.user_id == friend.user_id);
@@ -44,5 +46,7 @@ export default {
 
             return socket;
         }
+
+        return socket.emit("add.friend", { success: "You sent a friend request to " + friend.username }); // send a success message to the user
     }
 }
