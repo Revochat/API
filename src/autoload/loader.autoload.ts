@@ -19,7 +19,7 @@ export class Autoload { // This is the class that starts the server
     static port: number = process.env.HTTP_PORT ? Number(process.env.APP_PORT) : 3000;
     static baseDir = path.resolve(__dirname, "../socket");
     
-    static rateLimitThreshold = 10000; // 5 Events par seconde
+    static rateLimitThreshold = 10000; // 10 000 Events par seconde
     static rateLimitDuration = 10000; // 1 seconde
     static clients = new Map();
 
@@ -39,8 +39,6 @@ export class Autoload { // This is the class that starts the server
         Port: ${Number(process.env.APP_PORT) || 3000}
         `)
         // Owners: ${config.application.owners.join(", ")}
-
-
     }
 
 
@@ -124,20 +122,19 @@ export class Autoload { // This is the class that starts the server
     }
     
     protected static attachHandlersToSocket(socket: Socket.Socket) { 
-    const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
-    Logger.info(`Loading ${handlers.length} socket handlers...`);
-    for (const handler of handlers) {
-        Logger.info(`Loading socket handler ${handler.name}...`);
-        if (handler.name && typeof handler.run === 'function') {
-            socket.on(handler.name, (message: any) => {
-                Autoload.rateLimiterMiddleware(socket, () => {
-                    handler.run(redefineSocket(socket), message);
+        const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
+        Logger.info(`Loading ${handlers.length} socket handlers...`);
+        for (const handler of handlers) {
+            Logger.info(`Loading socket handler ${handler.name}...`);
+            if (handler.name && typeof handler.run === 'function') {
+                socket.on(handler.name, (message: any) => {
+                    Autoload.rateLimiterMiddleware(socket, () => {
+                        handler.run(redefineSocket(socket), message);
+                    });
                 });
-            });
+            }
         }
     }
-}
-
     
 
     public static start() { // This is the function that starts the server
@@ -162,11 +159,11 @@ export class Autoload { // This is the class that starts the server
                     newSocket.revo.logged = true
                     socket.emit("conn", "Connected to the server")
                     Autoload.attachHandlersToSocket(newSocket);
-                })
-                setTimeout(() => {
-                    console.log(newSocket.revo.logged)
-                    if(!newSocket.revo.logged) return socket.disconnect(true)
-                }, 5000)
+                })  
+                socket.on("disconnect", () => {
+                    Logger.warn(`Socket ${socket.id} disconnected.`);
+                    socket.disconnect(true)
+                });
             });
 
             Logger.beautifulSpace()
