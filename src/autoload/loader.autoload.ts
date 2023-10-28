@@ -6,8 +6,10 @@ import Socket from "socket.io"
 import fs from "fs"
 import { config } from "../../config";
 import path from 'path';
-import { redefineSocket } from "./socket_struct.autoload";
+import { RevoUserSocket, redefineSocket } from "./socket_struct.autoload";
 import express from "express";
+import User from "../database/models/User";
+import { set } from "mongoose";
 
 dotenv.config()
 
@@ -20,7 +22,6 @@ export class Autoload { // This is the class that starts the server
     static rateLimitThreshold = 10000; // 5 Events par seconde
     static rateLimitDuration = 10000; // 1 seconde
     static clients = new Map();
-
 
     constructor() {
         Autoload.port = Number(process.env.APP_PORT) || 3000
@@ -150,8 +151,24 @@ export class Autoload { // This is the class that starts the server
             });
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
-                Autoload.attachHandlersToSocket(socket);
+                const newSocket = redefineSocket(socket);
+                socket.on("conn", async (data: string) => {
+                    console.log(data)
+                    if(!data) return socket.emit("conn", "Please provide a token")
+                    const user = await User.findOne({token: data})
+                    console.log(user)
+                    if(!user) return socket.emit("conn", "Invalid token")
+                    newSocket.revo.user = user
+                    newSocket.revo.logged = true
+                    socket.emit("conn", "Connected to the server")
+                    Autoload.attachHandlersToSocket(newSocket);
+                })
+                setTimeout(() => {
+                    console.log(newSocket.revo.logged)
+                    if(!newSocket.revo.logged) return socket.disconnect(true)
+                }, 5000)
             });
+
             Logger.beautifulSpace()
             Autoload.logInfo()
             Logger.beautifulSpace()
