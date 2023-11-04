@@ -154,6 +154,7 @@ export class Autoload { // This is the class that starts the server
         Logger.info("Starting server...")
         DB_Connect().then(() => {
             Autoload.rules()
+            Autoload.app.use(express.json()) // This is the middleware that parses the body of the request to JSON format
             Autoload.autoloadRoutesFromDirectory(path.join(__dirname, '../http'));
 
             Autoload.app.listen(Autoload.port, () => {
