@@ -1,11 +1,11 @@
 import express from "express";
 
 export default {
-    name: "/test",
-    description: "test route",
+    name: "/ping",
+    description: "ping api http",
     method: "GET",
     run: async (req: express.Request, res: express.Response) => {
         // Your logic here
-        res.send("Test route response");
+        res.send("Pong !");
     }
 }

@@ -10,7 +10,7 @@ export default {
     run: async (req: express.Request, res: express.Response) => {
         try {
             const {username, password} = req.body
-
+            
             // if username or password badly formatted
             if(!username || !password) throw "Badly formatted"
 

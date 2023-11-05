@@ -1,9 +1,10 @@
-import User from "../database/models/User"
+import { Autoload } from "../autoload";
 
 export default {
-    name: "hello",
+    name: "connect",
     description: "Ping the server!",
-    run: async (socket: any, message: any) => {
-        console.log(socket.revo)
+    run: (client: any) => {
+        Autoload.socket.emit("pong", "Hi client from server !")
+        console.log(client.revo)
     }
 }
