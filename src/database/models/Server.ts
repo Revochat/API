@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IServer { // This is the interface for the server in the database
-    server_id: number;
+    server_id: string;
     server_name: string;
     server_icon?: string;
-    owner_id: number;
+    owner_id: string;
     channels?: number[];
     members: Array<Map<string, string[]>>; // map of user_id: roles_id
     members_count: number;
@@ -20,10 +20,10 @@ export interface IServer { // This is the interface for the server in the databa
 export interface IServerModel extends IServer {} // dont need to extend Document because we're not using mongoose
 
 const ServerSchema = new Schema({
-    server_id: { type: Number, required: true, unique: true, index: true },
+    server_id: { type: String, required: true, unique: true, index: true },
     server_name: { type: String, required: true },
     server_icon: { type: String, required: false, default: "" },
-    owner_id: { type: Number, required: true, index: true },
+    owner_id: { type: String, required: true, index: true },
     channels: { type: Array, required: false, default: [] },
     members: { type: Array, required: true},
     members_count: { type: Number, required: true, default: 0 },

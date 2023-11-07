@@ -37,9 +37,9 @@ export interface IChannelPermission {
 }    
 
 export interface IChannel { // This is the interface for the channel in the database
-    server_id?: number;
-    channel_id: number;
-    owner_id?: number;
+    server_id?: string;
+    channel_id: string;
+    owner_id?: string;
     channel_name?: string;
     channel_type: "HYBRID" | "TEXT" | "VOICE";
     channel_category: "DM" | "GROUP" | "SERVER";
@@ -54,11 +54,11 @@ export interface IChannel { // This is the interface for the channel in the data
 export interface IChannelModel extends IChannel, Document {}
 
 const ChannelSchema = new Schema({
-    server_id: {type: Number, required: false, index: true}, // server id if it's a server channel
-    channel_id: { type: Number, required: true, unique: true, index: true },
+    server_id: {type: String, required: false, index: true}, // server id if it's a server channel
+    channel_id: { type: String, required: true, unique: true, index: true },
 
     // if empty, it's a DM channel, if not empty and server_id is empty, it's a group channel, if not empty and server_id is not empty, it's a server channel
-    owner_id: { type: Number, required: false, index: true }, 
+    owner_id: { type: String, required: false, index: true }, 
 
     channel_name: { type: String, required: false },
     channel_type: { type: String, required: true }, // HYBRID (for instance DMs), TEXT, VOICE

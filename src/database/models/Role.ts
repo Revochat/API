@@ -35,12 +35,12 @@ export interface IRolePermission {
 
 export interface IRole { // This is the interface for the role in the database
 
-    role_id: number;
+    role_id: string;
     role_name: string;
     role_members: string[];
     role_color: string;
     role_position: number;
-    role_server_id: number;
+    role_server_id: string;
 
     created_at: string;
     updated_at: string;
@@ -51,12 +51,12 @@ export interface IRole { // This is the interface for the role in the database
 export interface IRoleModel extends IRole, Document {}
 
 const RoleSchema = new Schema({
-    role_id: { type: Number, required: true, unique: true, index: true },
+    role_id: { type: String, required: true, unique: true, index: true },
     role_name: { type: String, required: true },
     role_members: { type: Array, required: false, default: [] },
     role_color: { type: String, required: true, default: "#000000" },
     role_position: { type: Number, required: true, default: 0 },
-    role_server_id: { type: Number, required: true },
+    role_server_id: { type: String, required: true },
 
     created_at: { type: String, required: true },
     updated_at: { type: String, required: true },
