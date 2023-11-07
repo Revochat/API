@@ -37,6 +37,7 @@ export class Autoload { // This is the class that starts the server
 
         Version: ${config.api.version}
         Port: ${Number(process.env.APP_PORT) || 3000}
+        Socket Port: ${Number(process.env.SOCKET_PORT) || 3001}
         `)
         // Owners: ${config.application.owners.join(", ")}
     }
@@ -156,7 +157,7 @@ export class Autoload { // This is the class that starts the server
             Autoload.rules()
             Autoload.app.use(express.json()) // This is the middleware that parses the body of the request to JSON format
             Autoload.autoloadRoutesFromDirectory(path.join(__dirname, '../http'));
-
+            Autoload.port = Number(process.env.APP_PORT) || 3000
             Autoload.app.listen(Autoload.port, () => {
                 Logger.success(`Server started on port ${Autoload.port}`)
             });
