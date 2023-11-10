@@ -165,10 +165,8 @@ export class Autoload { // This is the class that starts the server
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 const newSocket = redefineSocket(socket);
                 socket.on("conn", async (data: string) => {
-                    // console.log(data.toString(), data) 
                     if(!data) return socket.emit("conn", "Please provide a token")
                     const user = await User.findOne({token: data})
-                    // console.log(user, "user")
                     if(!user) return socket.emit("conn", "Invalid token")
                     newSocket.revo.user = user
                     newSocket.revo.logged = true
