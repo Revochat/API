@@ -122,16 +122,14 @@ export class Autoload { // This is the class that starts the server
         return handlers;
     }
     
-    protected static attachHandlersToSocket(socket: Socket.Socket) { 
+    protected static attachHandlersToSocket(socket: Socket.Socket, newSocket: RevoUserSocket) { 
         const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
         Logger.info(`Loading ${handlers.length} socket handlers...`);
         for (const handler of handlers) {
             Logger.info(`Loading socket handler ${handler.name}...`);
             if (handler.name && typeof handler.run === 'function') {
                 socket.on(handler.name, (message: any) => {
-                    Autoload.rateLimiterMiddleware(socket, () => {
-                        handler.run(redefineSocket(socket), message);
-                    });
+                    handler.run(newSocket, message);
                 });
             }
         }
@@ -163,15 +161,13 @@ export class Autoload { // This is the class that starts the server
             });
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
-                const newSocket = redefineSocket(socket);
                 socket.on("conn", async (data: string) => {
                     if(!data) return socket.emit("conn", "Please provide a token")
                     const user = await User.findOne({token: data})
                     if(!user) return socket.emit("conn", "Invalid token")
-                    newSocket.revo.user = user
-                    newSocket.revo.logged = true
+                    const newSocket = redefineSocket(socket, user);
                     socket.emit("conn", "Connected to the server")
-                    Autoload.attachHandlersToSocket(newSocket);
+                    Autoload.attachHandlersToSocket(socket, newSocket);
                 })  
                 socket.on("disconnect", () => {
                     Logger.warn(`Socket ${socket.id} disconnected.`);

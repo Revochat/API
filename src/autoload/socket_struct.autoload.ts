@@ -11,13 +11,17 @@ export interface RevoUserSocket extends Socket{
 }
 
 
-export function redefineSocket(socket: Socket): RevoUserSocket {
+export function redefineSocket(socket: Socket, user: RevoUser | undefined = undefined): RevoUserSocket {
     const sock = socket as RevoUserSocket;
     sock.revo = {
         socket_id: socket.id,
         ip: socket.handshake.address,
         logged: false,
         user: null
+    }
+    if (user) {
+        sock.revo.logged = true;
+        sock.revo.user = user;
     }
     return sock;
 }

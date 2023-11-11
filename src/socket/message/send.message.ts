@@ -8,11 +8,11 @@ import Logger from "../../logger"
 export default {
     name: "send.message",
     description: "Send a message",
-    run: async function (socket: any, data: any) {
+    run: async function (socket: any, data: any, e : any) {
         if(!data) return socket.emit("send.message", "Please provide a message")
         if(!data.message) return socket.emit("send.message", "Please provide a message")
 
-        console.log(socket.revo)
+        console.log(socket.revo, data, e)
 
         if(!data.channel_id) return socket.emit("send.message", "Please provide a channel id")
         
