@@ -162,11 +162,11 @@ export class Autoload { // This is the class that starts the server
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 socket.on("conn", async (data: string) => {
-                    if(!data) return socket.emit("conn", "Please provide a token")
+                    if(!data) return socket.emit("user.connect", {error:"Please provide a token"})
                     const user = await User.findOne({token: data})
-                    if(!user) return socket.emit("conn", "Invalid token")
+                    if(!user) return socket.emit("user.connect", {error:"Invalid token"})
+                    socket.emit("user.connect", user)
                     const newSocket = redefineSocket(socket, user);
-                    socket.emit("conn", "Connected to the server")
                     Autoload.attachHandlersToSocket(socket, newSocket);
                 })  
                 socket.on("disconnect", () => {

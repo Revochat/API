@@ -11,9 +11,6 @@ export default {
     run: async function (socket: any, data: any, e : any) {
         if(!data) return socket.emit("send.message", "Please provide a message")
         if(!data.message) return socket.emit("send.message", "Please provide a message")
-
-        console.log(socket.revo, data, e)
-
         if(!data.channel_id) return socket.emit("send.message", "Please provide a channel id")
         
         const user = await User.findOne({user_id: data.user_id}) // check if the user exists
