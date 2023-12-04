@@ -4,7 +4,7 @@ export interface IRolePermission {
     server: {
         admin: boolean; // manage server (edit name, icon, etc) and permissions
 
-        members: {
+        manage: {
             invite: boolean; // invite members
             remove: boolean; // kick members
             ban: boolean; // ban members

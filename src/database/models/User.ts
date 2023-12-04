@@ -15,12 +15,12 @@ export interface RevoUser {
     created_at: Date;
     last_connection: Date;
 
-    servers: number[];
-    channels: number[];
-    friends: number[];
-    friends_requests_received: number[];
-    friends_requests_sent: number[];
-    blocked: number[];
+    servers: string[];
+    channels: string[];
+    friends: string[];
+    friends_requests_received: string[];
+    friends_requests_sent: string[];
+    blocked: string[];
 }
 
 export interface RevoUserDocument extends RevoUser, Document {}

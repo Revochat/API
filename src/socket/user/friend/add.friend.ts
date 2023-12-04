@@ -7,6 +7,8 @@ export default {
     description: "Add a friend to your friend list",
     run: async function (socket: any, data: any) {
         try {
+            if(!socket.revo.logged) return socket.emit("user.friend.add", { error: "You are not logged in" });
+
             if(!data.friend_id) return socket.emit("user.friend.add", { error: "Missing friend_id" });
 
             const user = socket.revo.user; // get the user from the socket
@@ -44,10 +46,10 @@ export default {
                 const UserDocument = await User.findOne({ user_id: user.user_id }); // find the user document
                 if(!UserDocument) return socket.emit("user.friend.add", { error: "User not found" });
 
-                UserDocument.friends.push(parseInt(friend.user_id));
+                UserDocument.friends.push(friend.user_id);
                 await UserDocument.save();
 
-                friend.friends.push(parseInt(user.user_id));
+                friend.friends.push(user.user_id);
                 await friend.save();
 
                 return socket.emit("user.friend.add", { success: "You are now friend with " + friend.username }); // send a success message to the user

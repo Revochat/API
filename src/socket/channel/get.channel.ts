@@ -3,10 +3,10 @@ import Logger from "../../logger";
 import Channel from "../../database/models/Channel";
 
 export default {
-    name: "channel.remove",
-    description: "remove a channel",
+    name: "channel.get",
+    description: "get a channel",
     run: async function (socket: any, data: any) {
-        if(!socket.revo.logged) return socket.emit("channel.remove", { error: "You are not logged in" });
+        if(!socket.revo.logged) return socket.emit("channel.get", { error: "You are not logged in" });
 
     }
 }
