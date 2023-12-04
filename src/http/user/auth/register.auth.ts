@@ -14,7 +14,7 @@ export default {
             // if username or password badly formatted
             if(!username || !password) throw "Badly formatted"
 
-            var user = await User.findOne({username: username})
+            var user = await User.findOne({user_id: username})
             if(user) throw "An error occured"
 
             // create a new user
