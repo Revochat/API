@@ -25,16 +25,17 @@ export default {
 
         const message = await Message.create({ // create the message
             message_id: UTILS.GENERATE.USER.default.ID, // generate a message id
-            user_id: socket.user.user_id,
+            user_id: user.user_id,
             channel_id: channel.channel_id,
             message: data.message,
             created_at: new Date().toLocaleString()
         })
 
-        Logger.info(`User ${socket.user.username} sent a message to ${user.username} in channel ${channel.channel_id}`)
+        Logger.info(`User ${user.username} sent a message to ${user.username} in channel ${channel.channel_id}`)
 
         socket.emit("message.send", message) // send the message to the sender
-
+        socket.to(channel.channel_id).emit("message.send", message) // send the message to the channel
+        
         return socket
     }
 }

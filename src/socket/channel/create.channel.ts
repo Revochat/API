@@ -1,6 +1,7 @@
 import User from "../../database/models/User";
 import Logger from "../../logger";
 import Channel from "../../database/models/Channel";
+import UTILS from "../../utils";
 
 export default {
     name: "channel.create",
@@ -38,19 +39,21 @@ export default {
                     created_at: new Date().toLocaleString(),
                 });
 
-                // save channel to user
-                
-                const UserDocument = await User.findOne({ where: { user_id: user.user_id } });
+                // save channel to user  
+                const UserDocument = await User.findOne({ user_id: user.user_id });
                 if(!UserDocument) return socket.emit("channel.create", { error: "User not found" });
 
                 UserDocument.channels.push(channel.channel_id);
-
                 await UserDocument.save();
 
                 // save channel to friend
-
                 friend.channels.push(channel.channel_id);
                 await friend.save();
+
+                socket.join(channel.channel_id);
+
+                // make the friend join the channel socket
+                socket.to(friend.user_id).emit("channel.join", {channel_id: channel.channel_id});
     
                 return socket.emit("channel.create", channel);
             }

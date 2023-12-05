@@ -165,6 +165,8 @@ export class Autoload { // This is the class that starts the server
                     if(!data) return socket.emit("user.connect", {error:"Please provide a token"})
                     const user = await User.findOne({token: data})
                     if(!user) return socket.emit("user.connect", {error:"Invalid token"})
+                    user.channels.forEach(channel => socket.join(channel))
+                    socket.join(user.user_id) // join the user socket room
                     socket.emit("user.connect", user)
                     const newSocket = redefineSocket(socket, user);
                     Autoload.attachHandlersToSocket(socket, newSocket);
