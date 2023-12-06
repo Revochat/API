@@ -19,7 +19,6 @@ export default {
         if(!userDocument.channels.includes(data.channel_id)) return socket.emit("channel.get", { error: "You are not in this channel" });
 
         // get the last 50 messages from the channel
-
         const limit = data.limit ? data.limit : 50;
         const messages = await Message.find({ channel_id: data.channel_id }).sort({ created_at: -1 }).limit(limit);
 
