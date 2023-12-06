@@ -4,5 +4,6 @@ services:
     build: . # build from Dockerfile in current directory
     ports: # map port 3000 to 3000
       - "3000:3000"
+      - "3001:3001"
     environment: # set environment variables
       - NODE_ENV=production

@@ -18,6 +18,7 @@ RUN npm install -g nodemon
 
 # Expose port 3000 for the application
 EXPOSE 3000
+EXPOSE 3001
 
 # Start the application using nodemon
 CMD ["nodemon", "index.ts"]
