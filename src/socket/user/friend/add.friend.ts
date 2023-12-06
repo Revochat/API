@@ -1,6 +1,7 @@
 import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
 import { RevoUser } from "../../../database/models/User";
+import Channel from "../../../database/models/Channel";
 
 export default {
     name: "user.friend.add",
@@ -29,6 +30,23 @@ export default {
                 
                 userDocument.friends.push(friend.user_id); // add the friend to the user
                 friend.friends.push(user.user_id); // add the user to the friend
+
+                // create a channel for the user and the friend
+                const channel = await Channel.create({
+                    channel_id: "DM_" + user.user_id + "_" + friend.user_id,
+                    channel_name: "DM_" + user.user_id + "_" + friend.user_id,
+                    channel_category: "DM",
+                    members: [user.user_id, friend.user_id],
+                    updated_at: new Date().toLocaleString(),
+                    created_at: new Date().toLocaleString(),
+                });
+
+                await channel.save(); // save the channel document
+
+                userDocument.channels.push(channel.channel_id); // add the channel to the user
+                friend.channels.push(channel.channel_id); // add the channel to the friend
+                socket.to(friend.user_id).emit("channel.join", { channel: channel }); // send the channel to the friend
+
                 await userDocument.save(); // save the user document
                 await friend.save(); // save the friend document
                 socket.emit("user.friend.add", { success: "You are now friends with " + friend.username }); // send a success message to the user
