@@ -2,7 +2,7 @@ import mongoose, {Document, Schema} from "mongoose";
 
 export interface IMessage { // This is the interface for the message in the database
     message_id: string;
-    user_id: string;
+    user_id: string | any;
     channel_id: string;
     message: string;
     created_at: string;
