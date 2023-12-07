@@ -6,27 +6,37 @@ export default {
     name: "remove.friend",
     description: "Remove a friend from your friend list",
     run: async function (socket: any, data: any) {
-        if(!data.friend_id) return socket.emit("remove.friend", { error: "Missing friend_id" });
+        try {
+        if (!data.friend_id) return socket.emit("remove.friend", { error: "Missing friend_id" });
 
-        const friend = await User.findOne({ user_id: data.friend_id }); // trouve "friend"
-        if(!friend) return socket.emit("remove.friend", { error: "User not found" });
+        const friend = await User.findOne({ user_id: data.friend_id });
+        if (!friend) return socket.emit("remove.friend", { error: "User not found" });
 
-        const user = socket.revo.user; // recupere la socket de l'utilisateur
+        const user = socket.revo.user;
+        console.log(user);
 
-        const friendIndex = user.friends.findIndex((f: any) => f.user_id === friend.user_id);
-        if(friendIndex === -1) return socket.emit("remove.friend", { error: "This user is not your friend" });
+        const UserDocument = await User.findOne({ user_id: user.user_id });
+        if (!UserDocument) return socket.emit("remove.friend", { error: "User not found" });
 
-        user.friends.splice(friendIndex, 1); // enleve l'ami de la liste d'amis de l'utilisateur
+        const friendIndex = user.friends.findIndex((f: any) => f === friend.user_id);
+        if (friendIndex === -1) return socket.emit("remove.friend", { error: "This user is not your friend" });
 
-        const userIndex = friend.friends.findIndex((f: any) => f.user_id === user.user_id);
-        if(userIndex !== -1) {
-            friend.friends.splice(userIndex, 1); // enleve l'utilisateur de la liste d'amis de l'ami
-            await friend.save(); // enregistre les changements de l'ami
+        const userIndex = friend.friends.findIndex((f: any) => f === user.user_id);
+        if (userIndex !== -1) {
+            friend.friends.splice(userIndex, 1); // remove user from friend's friend list
+            await friend.save(); // save changes
         }
 
-        await user.save(); // enregistre les changements de l'utilisateur
+        UserDocument.friends.splice(friendIndex, 1); // remove friend from user's friend list
+        await UserDocument.save(); // save changes
 
-        socket.emit("remove.friend", { success: `You removed ${friend.username} from your friends` }); // envoie un message de succes a l'utilisateur
+        socket.emit("remove.friend", { success: `You removed ${friend.username} from your friends` });
         return socket;
     }
-}
+    catch (error) {
+        console.error("Error in remove.friend:", error);
+        socket.emit("remove.friend", { error: "Internal server error" });
+        return socket;
+    }
+    }
+};
