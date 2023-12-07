@@ -11,7 +11,7 @@
     "http": "^0.0.1-security",
     "mongoose": "^7.5.0",
     "nodejs": "^0.0.0",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "socket.io": "^4.7.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
