@@ -40,4 +40,4 @@ const RevoUserSchema = new Schema({
     friends_requests_sent: {type: Array, required: true, default: []},
 });
 
-export default mongoose.model<RevoUserDocument>("RevoUser", RevoUserSchema);
+export default mongoose.model<RevoUserDocument>("User", RevoUserSchema);

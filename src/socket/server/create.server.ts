@@ -27,6 +27,8 @@ export default {
                 role_members: [user.id],
                 role_position: 0,
                 role_server_id: serverId,
+                created_at: new Date().toLocaleString(),
+                updated_at: new Date().toLocaleString(),
                 permissions: {
                     server: {
                         admin: true,
@@ -44,6 +46,8 @@ export default {
                 role_members: [user.id],
                 role_position: 1,
                 role_server_id: serverId,
+                created_at: new Date().toLocaleString(),
+                updated_at: new Date().toLocaleString(),
                 permissions: {
                     server: {
                         admin: false,
@@ -77,7 +81,7 @@ export default {
             });
 
             // add user to server
-            const UserDocument = await User.findOne({ user_id: user.id });
+            const UserDocument = await User.findOne({ user_id: user.user_id });
             if(!UserDocument) return socket.emit(UTILS.EVENTS.Server.Create, { error: "An error occured" });
 
             UserDocument.servers.push(server.server_id); // add server to user
