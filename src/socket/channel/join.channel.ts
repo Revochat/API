@@ -10,6 +10,10 @@ export default {
 
         if(!data.channel_id) return socket.emit("channel.join", { error: "Missing parameters" });
 
+        // check if channel exists
+        const channel = await Channel.findOne({ channel_id: data.channel_id });
+        if(!channel) return socket.emit("channel.join", { error: "Channel not found" });
+
         socket.join(data.channel_id);
     }
 }

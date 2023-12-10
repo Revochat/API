@@ -4,31 +4,8 @@ export interface IRolePermission {
     server: {
         admin: boolean; // manage server (edit name, icon, etc) and permissions
 
-        manage: {
-            invite: boolean; // invite members
-            remove: boolean; // kick members
-            ban: boolean; // ban members
-            deafen: boolean; // deafen members in voice channels
-            mute_voice: boolean; // mute members in voice channels
-            mute_chat: boolean; // mute members in chat
-            move: boolean; // move members in voice channels
-            rename: boolean; // rename members
-            roles: boolean; // manage roles (create, delete, edit)
-        }
-
-        channels: {
-            manage: boolean; // manage channels (create, delete, edit)
-            view: boolean; // view channels
-            speak: boolean; // speak in voice channels
-            video: boolean; // video in voice channels
-        };
-
         messages: {
             send: boolean; // send messages
-            delete: boolean; // delete messages (others messages)
-            mentions: boolean; // mention everyone, roles, users
-            send_files: boolean; // send files
-            reactions: boolean; // add reactions
         };
     };
 }

@@ -1,5 +1,6 @@
 import {USER }from './generate'
 import {STRING }from './verify'
+import { EventList } from './EventList'
 
 
 export default {
@@ -8,5 +9,6 @@ export default {
     },
     VERIFY: {
         STRING: STRING
-    }
+    },
+    EVENTS: EventList
 }

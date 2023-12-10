@@ -6,21 +6,17 @@ export interface RevoUser {
 
     username: string; // the username is the name that is displayed to the user
     password: string;
-    premium_expiration: Date | null;
     avatar: string;
 
-    message_privacy: "everyone" | "friends";
     status: "online" | "offline" | "idle" | "dnd";
     updated_at: Date;
     created_at: Date;
-    last_connection: Date;
 
     servers: string[];
     channels: string[];
     friends: string[];
     friends_requests_received: string[];
     friends_requests_sent: string[];
-    blocked: string[];
 }
 
 export interface RevoUserDocument extends RevoUser, Document {}
@@ -31,21 +27,17 @@ const RevoUserSchema = new Schema({
 
     username: {type: String, required: true},
     password: {type: String, required: true},
-    premium_expiration: {type: Date, required: false, default: null},
     avatar: {type: String, required: false, default: "default"},
 
-    message_privacy: {type: String, required: true, default: "everyone"},
     status: {type: String, required: true, default: "offline"},
     updated_at: {type: Date, required: true, default: new Date()},
     created_at: {type: Date, required: true, default: new Date()},
-    last_connection: {type: Date, required: true, default: new Date()},
 
     servers: {type: Array, required: true, default: []},
     channels: {type: Array, required: true, default: []},
     friends: {type: Array, required: true, default: []},
     friends_requests_received: {type: Array, required: true, default: []},
     friends_requests_sent: {type: Array, required: true, default: []},
-    blocked: {type: Array, required: true, default: []},
 });
 
 export default mongoose.model<RevoUserDocument>("RevoUser", RevoUserSchema);
