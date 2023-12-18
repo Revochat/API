@@ -171,6 +171,7 @@ export class Autoload { // This is the class that starts the server
                         socket.emit("user.connect", user)
                         const newSocket = redefineSocket(socket, user);
                         Autoload.attachHandlersToSocket(socket, newSocket);
+                        Logger.info(`Socket ${socket.id} connected.`);
                     })  
                 }
                 catch (error) {
