@@ -33,12 +33,11 @@ export default {
 
         Logger.info(`User ${user.username} sent a message to ${user.username} in channel ${channel.channel_id}`)
 
-        message.user_id = user // set the user to the message
-        message.user_id.password = undefined // remove the password from the user
-        message.user_id.token = undefined // remove the email from the user
+        user.password = undefined // remove the password from the user object
+        user.token = undefined // remove the token from the user object
 
-        socket.emit("message.send", message) // send the message to the sender
-        socket.to(channel.channel_id).emit("message.send", message) // send the message to the channel
+        socket.emit("message.send", {message, user}) // send the message to the sender
+        socket.to(channel.channel_id).emit("message.send", {message, user}) // send the message to the channel
         
         return socket
     }
