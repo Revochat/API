@@ -20,7 +20,7 @@ export default {
 
         // get the last 50 messages from the channel
         const limit = data.limit ? data.limit : 50;
-        const messages = await Message.find({ channel_id: data.channel_id }).sort({ created_at: -1 }).limit(limit);
+        const messages: any = await Message.find({ channel_id: data.channel_id }).sort({ created_at: -1 }).limit(limit);
 
         messages.reverse(); // reverse the messages array so the newest messages are at the bottom
 
@@ -31,10 +31,12 @@ export default {
             const message = messages[i];
             const author = await User.findOne({ user_id: message.user_id });
             if (!author) return socket.emit("channel.get", { error: "An error occured" });
-            message.user_id = author;
 
-            message.user_id.password = undefined; // remove the password from the user object
-            message.user_id.token = undefined; // remove the token from the user object
+            messages[i] = messages[i].toObject();
+            messages[i].user = author.toObject();
+
+            delete messages[i].user.password;
+            delete messages[i].user.token;
         }
 
         socket.emit("channel.get", { messages: messages });
