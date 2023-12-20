@@ -24,6 +24,8 @@ export default {
 
         messages.reverse(); // reverse the messages array so the newest messages are at the bottom
 
+        Logger.info(`User ${user.username} (${user.user_id}) got ${messages.length} messages from channel ${data.channel_id}`)
+
         socket.emit("channel.get", { messages: messages });
     }
 }
