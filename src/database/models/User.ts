@@ -1,6 +1,6 @@
 import mongoose, {Document, Schema} from "mongoose";
 
-export interface RevoUser {
+export interface IUser {
     user_id: string; // the user id is a unique name that is used to identify the user
     token: string;
 
@@ -19,7 +19,7 @@ export interface RevoUser {
     friends_requests_sent: string[];
 }
 
-export interface RevoUserDocument extends RevoUser, Document {}
+export interface IUserDocument extends IUser, Document {}
 
 const RevoUserSchema = new Schema({
     user_id: {type: String, required: true},
@@ -40,4 +40,4 @@ const RevoUserSchema = new Schema({
     friends_requests_sent: {type: Array, required: true, default: []},
 });
 
-export default mongoose.model<RevoUserDocument>("User", RevoUserSchema);
+export default mongoose.model<IUserDocument>("User", RevoUserSchema);

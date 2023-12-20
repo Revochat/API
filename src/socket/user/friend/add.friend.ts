@@ -1,6 +1,5 @@
 import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
-import { RevoUser } from "../../../database/models/User";
 import Channel from "../../../database/models/Channel";
 
 export default {

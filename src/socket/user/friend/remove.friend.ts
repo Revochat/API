@@ -1,6 +1,5 @@
 import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
-import { RevoUser } from "../../../database/models/User";
 
 export default {
     name: "remove.friend",

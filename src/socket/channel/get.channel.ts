@@ -26,6 +26,14 @@ export default {
 
         Logger.info(`User ${user.username} (${user.user_id}) got ${messages.length} messages from channel ${data.channel_id}`)
 
+        // populate the messages with the user data
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            const author = await User.findOne({ user_id: message.user_id });
+            if (!author) return socket.emit("channel.get", { error: "An error occured" });
+            message.user_id = author;
+        }
+
         socket.emit("channel.get", { messages: messages });
     }
 }

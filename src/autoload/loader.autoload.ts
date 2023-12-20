@@ -6,7 +6,7 @@ import Socket from "socket.io"
 import fs from "fs"
 import { config } from "../../config";
 import path from 'path';
-import { RevoUserSocket, redefineSocket } from "./socket_struct.autoload";
+import { IUserSocket, redefineSocket } from "./socket_struct.autoload";
 import express from "express";
 import User from "../database/models/User";
 import { set } from "mongoose";
@@ -122,7 +122,7 @@ export class Autoload { // This is the class that starts the server
         return handlers;
     }
     
-    protected static attachHandlersToSocket(socket: Socket.Socket, newSocket: RevoUserSocket) { 
+    protected static attachHandlersToSocket(socket: Socket.Socket, newSocket: IUserSocket) { 
         const handlers = Autoload.autoloadFilesFromDirectory(path.join(__dirname, '../socket'));
         Logger.info(`Loading ${handlers.length} socket handlers...`);
         for (const handler of handlers) {

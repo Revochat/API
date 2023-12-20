@@ -1,18 +1,18 @@
 import { Socket } from "socket.io";
-import { RevoUser } from "../database/models/User";
+import { IUser } from "../database/models/User";
 
-export interface RevoUserSocket extends Socket{
+export interface IUserSocket extends Socket{
     revo: {
         socket_id: string;
         ip: string;
         logged: boolean;
-        user: RevoUser | null;
+        user: IUser | null;
     }
 }
 
 
-export function redefineSocket(socket: Socket, user: RevoUser | undefined = undefined): RevoUserSocket {
-    const sock = socket as RevoUserSocket;
+export function redefineSocket(socket: Socket, user: IUser | undefined = undefined): IUserSocket {
+    const sock = socket as IUserSocket;
     sock.revo = {
         socket_id: socket.id,
         ip: socket.handshake.address,
