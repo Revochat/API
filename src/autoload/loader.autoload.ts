@@ -9,7 +9,7 @@ import path from 'path';
 import { IUserSocket, redefineSocket } from "./socket_struct.autoload";
 import express from "express";
 import User from "../database/models/User";
-import { set } from "mongoose";
+import Channel from "../database/models/Channel";
 
 dotenv.config()
 
@@ -167,6 +167,10 @@ export class Autoload { // This is the class that starts the server
                         const user = await User.findOne({token: data})
                         if(!user) return socket.emit("user.connect", {error:"Invalid token"})
                         user.channels.forEach(channel => socket.join(channel))
+
+                        // populate the user with the channels data
+                        user.channels = await Channel.find({channel_id: {$in: user.channels}})
+
                         socket.join(user.user_id) // join the user socket room
                         socket.emit("user.connect", user)
                         const newSocket = redefineSocket(socket, user);
