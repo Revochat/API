@@ -32,7 +32,7 @@ export default {
             const author = await User.findOne({ user_id: message.user_id });
             if (!author) return socket.emit("channel.get", { error: "An error occured" });
 
-            messages[i] = messages[i].toObject();
+            messages[i] = messages[i].toObject(); 
             messages[i].user = author.toObject();
 
             delete messages[i].user.password;

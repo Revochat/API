@@ -24,7 +24,7 @@ export default {
             // check if the user is in the channel
             if(!channel.members.includes(user.user_id)) return socket.emit("message.send", "This user isn't in this channel")
     
-            const message: any = await Message.create({ // create the message
+            var message: any = await Message.create({ // create the message
                 message_id: Date.now() + Math.floor(Math.random() * 100000),
                 user_id: user.user_id,
                 channel_id: channel.channel_id,
@@ -36,9 +36,14 @@ export default {
     
 
             // populate the messages with the user data
-            message.user = user;
-            message.user.password = undefined; // remove the password from the user object
-            message.user.token = undefined; // remove the token from the user object
+            const author = await User.findOne({ user_id: message.user_id });
+            if (!author) return socket.emit("message.send", { error: "An error occured" });
+
+            message = message.toObject(); 
+            message.user = author.toObject();
+
+            delete message.user.password;
+            delete message.user.token;
     
             socket.emit("message.send", {message}) // send the message to the sender
             socket.to(channel.channel_id).emit("message.send", {message}) // send the message to the channel
