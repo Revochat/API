@@ -113,7 +113,7 @@ export class Autoload { // This is the class that starts the server
     
             if (fs.statSync(fullPath).isDirectory()) {
                 handlers.push(...Autoload.autoloadFilesFromDirectory(fullPath));
-            } else if (file.endsWith('.ts')) {
+            } else if (file.endsWith('.ts') || file.endsWith('.js')) {
                 const handler = require(fullPath).default;
                 handlers.push(handler);
             }

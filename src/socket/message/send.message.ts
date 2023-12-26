@@ -32,7 +32,7 @@ export default {
                 created_at: new Date().toLocaleString()
             })
     
-            Logger.info(`User ${user.username} sent a message to ${user.username} in channel ${channel.channel_id}`)
+            Logger.info(`User ${user.username} sent a message in channel ${channel.channel_id}`)
     
 
             // populate the messages with the user data
