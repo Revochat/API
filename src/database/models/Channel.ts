@@ -61,7 +61,41 @@ const ChannelSchema = new Schema({
     created_at: { type: String, required: true, default: new Date().toLocaleString() },
 
     server_id: {type: String, required: false, index: true}, // server id if it's a server channel
-    permissions: { type: Object, required: false, default: {} } // permissions for the channel
+    permissions: { type: Object, required: false, default: {
+        admin: { // admin permission (can do everything)
+            roles_id: [],
+            user_id: [],
+        },
+    
+        view: {
+            roles_id: [],
+            user_id: [],
+        },
+        manage: {
+            invite: {
+                roles_id: [],
+                user_id: [],
+            },
+            remove: {
+                roles_id: [],
+                user_id: [],
+            },
+        },
+        message: {
+            send: {
+                roles_id: [],
+                user_id: [],
+            },
+            mentions: {
+                roles_id: [],
+                user_id: [],
+            },
+            send_files: {
+                roles_id: [],
+                user_id: [],
+            },
+        }
+    }} // permissions for the channel
 });
 
 export default mongoose.model<IChannelModel>("Channel", ChannelSchema);
