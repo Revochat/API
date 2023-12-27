@@ -163,30 +163,51 @@ export class Autoload { // This is the class that starts the server
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 try {
                     socket.on("user.connect", async (data: string) => {
+                        Logger.info(`Socket ${socket.id} trying to connect...`);
                         if(!data) return socket.emit("user.connect", {error:"Please provide a token"})
                         const user = await User.findOne({token: data})
                         if(!user) return socket.emit("user.connect", {error:"Invalid token"})
                         user.channels.forEach(channel => socket.join(channel))
 
+                        // set the user as connected
+                        user.status = "online"
+                        await user.save()
+
                         // populate the user with the channels data
-                        user.channels = await Channel.find({channel_id: {$in: user.channels}})
+                        user.channels = await Channel.find({channel_id: {$in: user.channels}})                
 
                         socket.join(user.user_id) // join the user socket room
                         socket.emit("user.connect", user)
                         const newSocket = redefineSocket(socket, user);
                         Autoload.attachHandlersToSocket(socket, newSocket);
                         Logger.info(`Socket ${socket.id} connected.`);
-                    })  
+                    })
+
+                                    
+                    socket.on("disconnect", () => {
+                        // set the user as disconnected
+                        const newSocket = socket as IUserSocket
+                        if (!newSocket.revo || !newSocket.revo.user) {
+                            return socket.disconnect(true), socket.emit("user.connect", {error:"An error occured while disconnecting"}), Logger.warn(`Socket ${socket.id} disconnected.`);
+                        }
+
+                        const user_id = newSocket.revo.user.user_id
+    
+                        User.findOne({user_id}).then(user => {
+                            if(!user) return
+                            user.status = "offline"
+                            user.save()
+                        })
+    
+                        Logger.warn(`Socket ${socket.id} disconnected.`);
+                        socket.disconnect(true)
+                    });
                 }
                 catch (error) {
                     Logger.error(error)
                     socket.emit("user.connect", {error:"An error occured"})
                 }
 
-                socket.on("disconnect", () => {
-                    Logger.warn(`Socket ${socket.id} disconnected.`);
-                    socket.disconnect(true)
-                });
             });
 
             Logger.beautifulSpace()
