@@ -21,7 +21,6 @@ export default {
             const newUser = await User.create({
                 username: username,
                 password: await bcrypt.hash(password, 10),
-                user_id: username,
                 token: UTILS.GENERATE.USER.default.TOKEN,
                 
                 wallet_token: null,

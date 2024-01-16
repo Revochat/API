@@ -10,6 +10,7 @@ import { IUserSocket, redefineSocket } from "./socket_struct.autoload";
 import express from "express";
 import User from "../database/models/User";
 import Channel from "../database/models/Channel";
+import { PeerServer } from "peer";
 
 dotenv.config()
 
@@ -159,6 +160,8 @@ export class Autoload { // This is the class that starts the server
             Autoload.app.listen(Autoload.port, () => {
                 Logger.success(`Server started on port ${Autoload.port}`)
             });
+
+            const peerServer = PeerServer({ port: 9000, path: "/myapp" });
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 try {

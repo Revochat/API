@@ -1,7 +1,7 @@
 import mongoose, {Document, Schema} from "mongoose";
 
 export interface IUser {
-    user_id: string; // the user id is a unique name that is used to identify the user
+    user_id: string;
     token: string;
 
     username: string; // the username is the name that is displayed to the user
@@ -22,7 +22,7 @@ export interface IUser {
 export interface IUserDocument extends IUser, Document {}
 
 const RevoUserSchema = new Schema({
-    user_id: {type: String, required: true},
+    user_id: { type: String, required: false, unique: true },
     token: {type: String, required: true},
 
     username: {type: String, required: true},
@@ -38,6 +38,14 @@ const RevoUserSchema = new Schema({
     friends: {type: Array, required: true, default: []},
     friends_requests_received: {type: Array, required: true, default: []},
     friends_requests_sent: {type: Array, required: true, default: []},
+});
+
+
+RevoUserSchema.pre<IUserDocument>('save', function (next) {
+    if (!this.user_id) {
+        this.user_id = this._id.toHexString().toString();
+    }
+    next();
 });
 
 export default mongoose.model<IUserDocument>("User", RevoUserSchema);

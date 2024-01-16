@@ -39,7 +39,7 @@ export interface IChannelPermission {
 export interface IChannel { // This is the interface for the channel in the database
     channel_id: string;
     channel_name: string;
-    channel_category: "DM" | "SERVER";
+    channel_category: "AUDIO" | "TEXT" | "HYBRID";
     members: string[];
     updated_at: string;
     created_at: string;
