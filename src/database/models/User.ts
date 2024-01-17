@@ -13,7 +13,7 @@ export interface IUser {
     created_at: Date;
 
     servers: string[];
-    channels: string[];
+    channels: string[] | any[];
     friends: string[];
     friends_requests_received: string[];
     friends_requests_sent: string[];

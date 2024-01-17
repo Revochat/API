@@ -178,6 +178,13 @@ export class Autoload { // This is the class that starts the server
 
                         // populate the user with the channels data
                         user.channels = await Channel.find({channel_id: {$in: user.channels}})
+
+                        // populate members of the channels
+                        for (let i = 0; i < user.channels.length; i++) {
+                            const channel = user.channels[i];
+                            channel.members = await User.find({user_id: {$in: channel.members}})
+                            user.channels[i] = channel
+                        }
                         
                         // populate the user with the friends data
                         user.friends = await User.find({user_id: {$in: user.friends}})
