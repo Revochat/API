@@ -8,13 +8,12 @@ export default {
     description: "Remove a friend from your friend list",
     run: async function (socket: any, data: any) {
         try {
-            if (!data.friend_id) return socket.emit("remove.friend", { error: "Missing friend_id" });
+            if (!data.username) return socket.emit("remove.friend", { error: "Missing username" });
 
-            const friend = await User.findOne({ user_id: data.friend_id });
+            const friend = await User.findOne({ username: data.username });
             if (!friend) return socket.emit("remove.friend", { error: "User not found" });
 
             const user = socket.revo.user;
-            console.log(user);
 
             const UserDocument = await User.findOne({ user_id: user.user_id });
             if (!UserDocument) return socket.emit("remove.friend", { error: "User not found" });

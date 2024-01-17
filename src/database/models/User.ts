@@ -25,7 +25,7 @@ const RevoUserSchema = new Schema({
     user_id: { type: String, required: false, unique: true },
     token: {type: String, required: true},
 
-    username: {type: String, required: true},
+    username: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     avatar: {type: String, required: false, default: "default"},
 

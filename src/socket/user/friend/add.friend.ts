@@ -9,14 +9,14 @@ export default {
         try {
             if(!socket.revo.logged) return socket.emit("user.friend.add", { error: "You are not logged in" });
 
-            if(!data.friend_id) return socket.emit("user.friend.add", { error: "Missing friend_id" });
+            if(!data.username) return socket.emit("user.friend.add", { error: "Missing username" });
 
             const user = socket.revo.user; // get the user from the socket
 
             const userDocument = await User.findOne({ user_id: user.user_id }); // find the user document
             if (!userDocument) return socket.emit("user.friend.add", { error: "User not found" });
 
-            const friend = await User.findOne({ user_id: data.friend_id }); // find the friend
+            const friend = await User.findOne({ username: data.username }); // find the friend
             if(!friend) return socket.emit("user.friend.add", { error: "User not found" });
     
             if(userDocument.friends.includes(friend.user_id)) return socket.emit("user.friend.add", { error: "You are already friends with " + friend.username });
