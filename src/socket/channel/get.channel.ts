@@ -19,7 +19,7 @@ export default {
         if(!userDocument.channels.includes(data.channel_id)) return socket.emit("channel.get", { error: "You are not in this channel" });
 
         // get the last 50 messages from the channel
-        const limit = data.limit ? data.limit : 50;
+        const limit = data.limit ? data.limit : 25;
         const messages: any = await Message.find({ channel_id: data.channel_id }).sort({ created_at: -1 }).limit(limit);
 
         messages.reverse(); // reverse the messages array so the newest messages are at the bottom
@@ -38,11 +38,6 @@ export default {
             delete messages[i].user.password;
             delete messages[i].user.token;
         }
-
-        // order message by date
-        messages.sort((a: any, b: any) => {
-            return a.created_at - b.created_at;
-        });
 
         socket.emit("channel.get", { messages: messages });
     }
