@@ -6,7 +6,7 @@ export interface IMessage { // This is the interface for the message in the data
     user_id: string;
     channel_id: string;
     message: string;
-    created_at: string;
+    created_at: Date;
 }
 
 export interface IMessageModel extends IMessage, Document {}
@@ -16,7 +16,7 @@ const MessageSchema = new Schema({
     user_id: { type: String, required: true },
     channel_id: { type: String, required: true, index: true },
     message: { type: String, required: true },
-    created_at: { type: String, required: true, default: Date.now() },
+    created_at: { type: Date, required: true, default: Date.now() },
 });
 
 export default mongoose.model<IMessageModel>("Message", MessageSchema);
