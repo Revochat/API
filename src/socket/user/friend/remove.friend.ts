@@ -38,6 +38,7 @@ export default {
             socket.leave(user.user_id);
 
             // remove channel from user's channels and friend's channels
+            console.log(user.channels, friend.channels);
             user.channels = user.channels.filter((channel: any) => channel !== friend.user_id);
             friend.channels = friend.channels.filter((channel: any) => channel !== user.user_id);
 

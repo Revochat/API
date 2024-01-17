@@ -51,7 +51,7 @@ export interface IChannel { // This is the interface for the channel in the data
 export interface IChannelModel extends IChannel, Document {}
 
 const ChannelSchema = new Schema({
-    channel_id: { type: String, required: true, unique: true, index: true },
+    channel_id: { type: String, unique: true, index: true, default: "" },
 
     channel_name: { type: String, required: true },
     channel_category: { type: String, required: true }, // DM, SERVER
