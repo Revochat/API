@@ -26,12 +26,9 @@ export default {
 
             // create channel
             const channel = await Channel.create({
-                channel_id: Date.now() + Math.floor(Math.random() * 100000),
                 channel_name: data.channel_name,
                 channel_category: "SERVER",
                 members: [user.user_id],
-                updated_at: new Date().toLocaleString(),
-                created_at: new Date().toLocaleString(),
 
                 server_id: server.server_id,
             });

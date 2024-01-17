@@ -19,7 +19,7 @@ export interface IUser {
     friends_requests_sent: string[];
 }
 
-export interface IUserDocument extends IUser, Document {}
+export interface IUserModel extends IUser, Document {}
 
 const RevoUserSchema = new Schema({
     user_id: { type: String, required: false, unique: true },
@@ -41,11 +41,11 @@ const RevoUserSchema = new Schema({
 });
 
 
-RevoUserSchema.pre<IUserDocument>('save', function (next) {
+RevoUserSchema.pre<IUserModel>('save', function (next) {
     if (!this.user_id) {
         this.user_id = this._id.toHexString().toString();
     }
     next();
 });
 
-export default mongoose.model<IUserDocument>("User", RevoUserSchema);
+export default mongoose.model<IUserModel>("User", RevoUserSchema);

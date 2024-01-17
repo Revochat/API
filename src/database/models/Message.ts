@@ -19,4 +19,11 @@ const MessageSchema = new Schema({
     created_at: { type: Date, required: true, default: Date.now() },
 });
 
+MessageSchema.pre<IMessageModel>('save', function (next) {
+    if (!this.message_id) {
+        this.message_id = this._id.toHexString().toString();
+    }
+    next();
+});
+
 export default mongoose.model<IMessageModel>("Message", MessageSchema);

@@ -32,12 +32,9 @@ export default {
 
                 // create a channel for the user and the friend
                 const channel = await Channel.create({
-                    channel_id: Date.now() + Math.floor(Math.random() * 100000),
                     channel_name: "DM_" + user.user_id + "_" + friend.user_id,
                     channel_category: "DM",
                     members: [user.user_id, friend.user_id],
-                    updated_at: new Date().toLocaleString(),
-                    created_at: new Date().toLocaleString(),
                 });
 
                 await channel.save(); // save the channel document

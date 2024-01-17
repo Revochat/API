@@ -41,8 +41,8 @@ export interface IChannel { // This is the interface for the channel in the data
     channel_name: string;
     channel_category: "AUDIO" | "TEXT" | "HYBRID";
     members: string[];
-    updated_at: string;
-    created_at: string;
+    updated_at: Date;
+    created_at: Date;
 
     server_id?: string;
     permissions?: IChannelPermission;
@@ -57,8 +57,8 @@ const ChannelSchema = new Schema({
     channel_category: { type: String, required: true }, // DM, SERVER
 
     members: { type: Array, required: true, default: {} }, // map of user_id: roles_id
-    updated_at: { type: String, required: true, default: Date.now() },
-    created_at: { type: String, required: true, default: Date.now() },
+    updated_at: { type: Date, required: true, default: Date.now() },
+    created_at: { type: Date, required: true, default: Date.now() },
 
     server_id: {type: String, required: false, index: true}, // server id if it's a server channel
     permissions: { type: Object, required: false, default: {
@@ -96,6 +96,13 @@ const ChannelSchema = new Schema({
             },
         }
     }} // permissions for the channel
+});
+
+ChannelSchema.pre<IChannelModel>('save', function (next) {
+    if (!this.channel_id) {
+        this.channel_id = this._id.toHexString().toString();
+    }
+    next();
 });
 
 export default mongoose.model<IChannelModel>("Channel", ChannelSchema);

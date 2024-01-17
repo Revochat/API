@@ -25,11 +25,9 @@ export default {
             if(!channel.members.includes(user.user_id)) return socket.emit("message.send", "This user isn't in this channel")
     
             var message: any = await Message.create({ // create the message
-                message_id: Date.now() + Math.floor(Math.random() * 100000),
                 user_id: user.user_id,
                 channel_id: channel.channel_id,
-                message: data.message,
-                created_at: Date.now()
+                message: data.message
             })
     
             Logger.info(`User ${user.username} sent a message in channel ${channel.channel_id}`)

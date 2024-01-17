@@ -16,19 +16,23 @@ export default {
     
             const user = socket.revo.user; // get user from socket
 
-            // create server id to create roles
-            const serverId = Date.now() + Math.floor(Math.random() * 100000);
+            // create server
+            const server = await Server.create({
+                server_name: data.name,
+                owner_id: user.id,
+                members: [{ user_id: user.id, roles: ["owner"] }],
+                members_count: 1,
+                roles: ['1', '2']
+            });
 
             // create default roles
             const adminRole = await Role.create({
-                role_id: Date.now() + Math.floor(Math.random() * 100000),
+                role_id: "2",
                 role_name: "admin",
                 role_color: "#FF0000",
                 role_members: [user.id],
                 role_position: 0,
-                role_server_id: serverId,
-                created_at: new Date().toLocaleString(),
-                updated_at: new Date().toLocaleString(),
+                role_server_id: server.server_id,
                 permissions: {
                     server: {
                         admin: true,
@@ -40,14 +44,12 @@ export default {
             });
 
             const memberRole = await Role.create({
-                role_id: Date.now() + Math.floor(Math.random() * 100000),
+                role_id: "1",
                 role_name: "member",
                 role_color: "#000000",
                 role_members: [user.id],
                 role_position: 1,
-                role_server_id: serverId,
-                created_at: new Date().toLocaleString(),
-                updated_at: new Date().toLocaleString(),
+                role_server_id: server.server_id,
                 permissions: {
                     server: {
                         admin: false,
@@ -58,26 +60,11 @@ export default {
                 }
             });
 
-            // create server
-            const server = await Server.create({
-                server_id: serverId,
-                server_name: data.name,
-                owner_id: user.id,
-                members: [{ user_id: user.id, roles: ["owner"] }],
-                members_count: 1,
-                updated_at: new Date().toLocaleString(),
-                created_at: new Date().toLocaleString(),
-                roles: [adminRole.role_id, memberRole.role_id]
-            });
-
             // create channel for server
             const channel = await Channel.create({
-                channel_id: Date.now() + Math.floor(Math.random() * 100000),
                 channel_name: data.name,
                 channel_category: "SERVER",
-                members: [user.user_id],
-                updated_at: new Date().toLocaleString(),
-                created_at: new Date().toLocaleString(),
+                members: [user.user_id]
             });
 
             // add user to server
