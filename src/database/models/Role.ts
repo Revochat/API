@@ -35,8 +35,8 @@ const RoleSchema = new Schema({
     role_position: { type: Number, required: true, default: 0 },
     role_server_id: { type: String, required: true },
 
-    created_at: { type: String, required: true },
-    updated_at: { type: String, required: true },
+    created_at: { type: String, required: true, default: Date.now() },
+    updated_at: { type: String, required: true, default: Date.now() },
 
     permissions: { type: Object, required: false, default: {} } // permissions for the role
 });

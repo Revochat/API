@@ -30,8 +30,8 @@ const RevoUserSchema = new Schema({
     avatar: {type: String, required: false, default: "default"},
 
     status: {type: String, required: true, default: "offline"},
-    updated_at: {type: Date, required: true, default: new Date()},
-    created_at: {type: Date, required: true, default: new Date()},
+    updated_at: {type: Date, required: true, default: Date.now()},
+    created_at: {type: Date, required: true, default: Date.now()},
 
     servers: {type: Array, required: true, default: []},
     channels: {type: Array, required: true, default: []},

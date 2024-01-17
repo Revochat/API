@@ -26,8 +26,8 @@ const ServerSchema = new Schema({
     channels: { type: Array, required: false, default: [] },
     members: { type: Array, required: true},
     members_count: { type: Number, required: true, default: 1 },
-    updated_at: { type: String, required: true, default: new Date().toLocaleString() },
-    created_at: { type: String, required: true, default: new Date().toLocaleString() },
+    updated_at: { type: String, required: true, default: Date.now()},
+    created_at: { type: String, required: true, default: Date.now() },
     banned_users: { type: Array, required: false, default: [] },
 
     invite_ids: { type: Array, required: false, default: [] },

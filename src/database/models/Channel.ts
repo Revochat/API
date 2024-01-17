@@ -57,8 +57,8 @@ const ChannelSchema = new Schema({
     channel_category: { type: String, required: true }, // DM, SERVER
 
     members: { type: Array, required: true, default: {} }, // map of user_id: roles_id
-    updated_at: { type: String, required: true, default: new Date().toLocaleString() },
-    created_at: { type: String, required: true, default: new Date().toLocaleString() },
+    updated_at: { type: String, required: true, default: Date.now() },
+    created_at: { type: String, required: true, default: Date.now() },
 
     server_id: {type: String, required: false, index: true}, // server id if it's a server channel
     permissions: { type: Object, required: false, default: {
