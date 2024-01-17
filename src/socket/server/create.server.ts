@@ -26,7 +26,7 @@ export default {
             });
 
             // create default roles
-            const adminRole = await Role.create({
+            await Role.create({
                 role_id: "2",
                 role_name: "admin",
                 role_color: "#FF0000",
@@ -43,7 +43,7 @@ export default {
                 }
             });
 
-            const memberRole = await Role.create({
+            await Role.create({
                 role_id: "1",
                 role_name: "member",
                 role_color: "#000000",
