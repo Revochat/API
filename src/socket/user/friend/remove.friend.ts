@@ -1,5 +1,7 @@
 import User from "../../../database/models/User"
 import bcrypt from "bcrypt"
+import Message from "../../../database/models/Message"
+import Channel from "../../../database/models/Channel"
 
 export default {
     name: "remove.friend",
@@ -28,6 +30,24 @@ export default {
 
         UserDocument.friends.splice(friendIndex, 1); // remove friend from user's friend list
         await UserDocument.save(); // save changes
+
+        // delete all messages between user and friend
+        await Message.deleteMany({ $or: [{ from: user.user_id, to: friend.user_id }, { from: friend.user_id, to: user.user_id }] });
+
+        // remove channel between user and friend
+        socket.leave(friend.user_id);
+        socket.leave(user.user_id);
+
+        // remove channel from user's channels and friend's channels
+        user.channels = user.channels.filter((channel: any) => channel !== friend.user_id);
+        friend.channels = friend.channels.filter((channel: any) => channel !== user.user_id);
+
+        // save changes
+        await user.save();
+        await friend.save();
+
+        // remove channel from channels collection
+        await Channel.findOneAndDelete({ channel_id: friend.user_id });
 
         socket.emit("remove.friend", { success: `You removed ${friend.username} from your friends` });
         return socket;

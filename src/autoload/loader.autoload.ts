@@ -177,7 +177,10 @@ export class Autoload { // This is the class that starts the server
                         await user.save()
 
                         // populate the user with the channels data
-                        user.channels = await Channel.find({channel_id: {$in: user.channels}})                
+                        user.channels = await Channel.find({channel_id: {$in: user.channels}})
+                        
+                        // populate the user with the friends data
+                        user.friends = await User.find({user_id: {$in: user.friends}})
 
                         socket.join(user.user_id) // join the user socket room
                         socket.emit("user.connect", user)
