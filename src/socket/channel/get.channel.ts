@@ -39,6 +39,11 @@ export default {
             delete messages[i].user.token;
         }
 
+        // order message by date
+        messages.sort((a: any, b: any) => {
+            return a.created_at - b.created_at;
+        });
+
         socket.emit("channel.get", { messages: messages });
     }
 }
