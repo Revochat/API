@@ -32,8 +32,8 @@ export default {
 
                 // create a channel for the user and the friend
                 const channel = await Channel.create({
-                    channel_name: "DM_" + user.user_id + "_" + friend.user_id,
-                    channel_category: "DM",
+                    channel_name: "HYBRID_" + user.user_id + "_" + friend.user_id,
+                    channel_category: "HYBRID",
                     members: [user.user_id, friend.user_id],
                 });
 
