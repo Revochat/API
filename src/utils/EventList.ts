@@ -28,6 +28,7 @@ export namespace EventList {
     export enum Server {
         Error = "server.error",
         Create = "server.create",
+        Delete = "server.delete",
     }
 
     export namespace Error {
