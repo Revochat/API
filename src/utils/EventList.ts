@@ -23,6 +23,7 @@ export namespace EventList {
         Connect = "user.connect",
         AddFriend = "user.friend.add",
         RemoveFriend = "user.friend.add",
+        SetAvatar = "user.avatar.set",
     }
 
     export enum Server {

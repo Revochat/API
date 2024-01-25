@@ -7,20 +7,20 @@ import Server from "../../database/models/Server";
 // NOTE: DM CHANNELS ARE NOT CREATED HERE, THEY ARE CREATED WHEN A USER ADDS ANOTHER USER AS A FRIEND
 
 export default {
-    name: "channel.create",
+    name: UTILS.EVENTS.Channel.Create,
     description: "create a channel in a server",
     run: async function (socket: any, data: any) {
         try {
-            if(!socket.revo.logged) return socket.emit("channel.create", { error: "You are not logged in" });
-            if(!data.server_id) return socket.emit("channel.create", { error: "Missing parameters" });
+            if(!socket.revo.logged) return socket.emit(UTILS.EVENTS.Channel.Create, { error: "You are not logged in" });
+            if(!data.server_id) return socket.emit(UTILS.EVENTS.Channel.Create, { error: "Missing parameters" });
     
             const user = socket.revo.user; // get user from socket
 
             // check if user is in the server
             const server = await Server.findOne({ where: { id: data.server_id } });
-            if(!server) return socket.emit("channel.create", { error: "Server not found" });
+            if(!server) return socket.emit(UTILS.EVENTS.Channel.Create, { error: "Server not found" });
 
-            if(!server.members.includes(user.user_id)) return socket.emit("channel.create", { error: "You are not in this server" });
+            if(!server.members.includes(user.user_id)) return socket.emit(UTILS.EVENTS.Channel.Create, { error: "You are not in this server" });
             
             // check if user has permission to create a channel
 
@@ -34,11 +34,11 @@ export default {
             });
 
             // send channel to socket
-            socket.emit("channel.create", { channel });
-            socket.to(`server.${data.server}`).emit("channel.create", { channel });
+            socket.emit(UTILS.EVENTS.Channel.Create, { channel });
+            socket.to(`server.${data.server}`).emit(UTILS.EVENTS.Channel.Create, { channel });
         } catch (error) {
             Logger.error(error);
-            return socket.emit("channel.create", { error: "An error occured" });
+            return socket.emit(UTILS.EVENTS.Channel.Create, { error: "An error occured" });
         }
     }
 }
