@@ -19,7 +19,7 @@ export interface IServer { // This is the interface for the server in the databa
 export interface IServerModel extends IServer, Document {} // dont need to extend Document because we're not using mongoose
 
 const ServerSchema = new Schema({
-    server_id: { type: String, required: true, unique: true, index: true },
+    server_id: { type: String, unique: true, index: true },
     server_name: { type: String, required: true },
     server_icon: { type: String, required: false, default: "" },
     owner_id: { type: String, required: true, index: true },
