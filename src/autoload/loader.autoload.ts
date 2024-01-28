@@ -161,7 +161,7 @@ export class Autoload { // This is the class that starts the server
                 Logger.success(`Server started on port ${Autoload.port}`)
             });
 
-            const peerServer = PeerServer({ port: 9000, path: "/myapp" });
+            const peerServer = PeerServer({ port: 9005, path: "/myapp" });
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 try {
