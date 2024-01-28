@@ -5,5 +5,10 @@ services:
     ports: # map port 3000 to 3000
       - "3000:3000"
       - "3001:3001"
+      - "9005:9005"
     environment: # set environment variables
       - NODE_ENV=production
+      - MONGO_URL=mongodb://test:test@mongo:27017/test
+      - MONGO_USERNAME=test
+      - MONGO_PASSWORD=test
+      - BASE_URI=https://revochat.org
