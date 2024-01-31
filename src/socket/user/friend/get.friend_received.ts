@@ -15,6 +15,12 @@ export default {
             // get user in the friends list
             const friends_requests_received = await User.find({ _id: { $in: user.friends_requests_received } }).populate("friends_requests_received").exec();
 
+            // remove the password and token from the user
+            friends_requests_received.forEach((user: any) => {
+                user.password = undefined;
+                user.token = undefined;
+            });
+
             socket.emit(UTILS.EVENTS.User.GetFriendsReceived, { friends_requests_received });
         } catch (error) {
             Logger.error(error)
