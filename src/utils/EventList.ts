@@ -20,6 +20,7 @@ export namespace EventList {
         Delete = "user.delete",
         Error = "user.error",
         Get = "user.get",
+        GetFriends = "user.friends.get",
         Connect = "user.connect",
         AddFriend = "user.friend.add",
         RemoveFriend = "user.friend.remove",

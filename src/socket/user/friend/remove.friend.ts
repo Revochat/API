@@ -25,9 +25,6 @@ export default {
 
             friend.friends.splice(userIndex, 1); // remove user from friend's friend list
             user.friends.splice(friendIndex, 1); // remove friend from user's friend list
-
-            console.log(user.channels)
-            console.log(friend.channels)
             
             // get the channel between user and friend
             const channelToRemove = await Channel.findOne({ members: { $all: [user.user_id, friend.user_id] } });
@@ -52,8 +49,7 @@ export default {
             await Channel.findOneAndDelete({ channel_id: channelToRemove.channel_id });
 
             socket.emit(UTILS.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} from your friends` });
-            return socket;
-            
+
         } catch (error) {
             console.error("Error in remove.friend:", error);
             socket.emit(UTILS.EVENTS.User.RemoveFriend, { error: "Internal server error" });
