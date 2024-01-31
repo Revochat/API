@@ -22,7 +22,7 @@ export default {
     
             // get the last 50 messages from the channel
             const limit = data.limit ? data.limit : 25;
-            const messages: any = await Message.find({ channel_id: data.channel_id }).sort({ created_at: -1 }).limit(limit);
+            const messages: any = await Message.find({ channel_id: data.channel_id }).sort({ createdAt: -1 }).limit(limit);
     
             messages.reverse(); // reverse the messages array so the newest messages are at the bottom
     
