@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start": "nodemon index.ts",
+    "dev": "nodemon index.ts",
+    "build": "tsc ."
+  },
   "dependencies": {
     "any-ascii": "^0.3.2",
     "bcrypt": "^5.1.1",
