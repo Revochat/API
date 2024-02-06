@@ -8,8 +8,6 @@ export interface IServer { // This is the interface for the server in the databa
     channels?: number[];
     members: Array<Map<string, string[]>>; // map of user_id: roles_id
     members_count: number;
-    updated_at: Date;
-    created_at: Date;
     banned_users?: number[];
 
     invite_ids?: number[];
@@ -26,13 +24,13 @@ const ServerSchema = new Schema({
     channels: { type: Array, required: false, default: [] },
     members: { type: Array, required: true},
     members_count: { type: Number, required: true, default: 1 },
-    updated_at: { type: Date, required: true, default: Date.now()},
-    created_at: { type: Date, required: true, default: Date.now() },
     banned_users: { type: Array, required: false, default: [] },
 
     invite_ids: { type: Array, required: false, default: [] },
     roles: { type: Array, required: true, default: [] } // permissions for the server
-});
+}, 
+{timestamps: true}
+);
 
 
 ServerSchema.pre<IServerModel>('save', function (next) {

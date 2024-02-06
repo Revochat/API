@@ -19,9 +19,6 @@ export interface IRole { // This is the interface for the role in the database
     role_position: number;
     role_server_id: string;
 
-    created_at: Date;
-    updated_at: Date;
-
     permissions?: IRolePermission;
 }
 
@@ -35,10 +32,9 @@ const RoleSchema = new Schema({
     role_position: { type: Number, required: true, default: 0 },
     role_server_id: { type: String, required: true },
 
-    created_at: { type: Date, required: true, default: Date.now() },
-    updated_at: { type: Date, required: true, default: Date.now() },
-
     permissions: { type: Object, required: false, default: {} } // permissions for the role
-});
+}, 
+{timestamps: true}
+);
 
 export default mongoose.model<IRoleModel>("Role", RoleSchema);

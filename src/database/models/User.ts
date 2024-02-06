@@ -9,8 +9,6 @@ export interface IUser {
     avatar: string;
 
     status: "online" | "offline" | "idle" | "dnd";
-    updated_at: Date;
-    created_at: Date;
 
     servers: string[];
     channels: string[] | any[];
@@ -30,15 +28,15 @@ const RevoUserSchema = new Schema({
     avatar: {type: String, required: false, default: "default"},
 
     status: {type: String, required: true, default: "offline"},
-    updated_at: {type: Date, required: true, default: Date.now()},
-    created_at: {type: Date, required: true, default: Date.now()},
 
     servers: {type: Array, required: true, default: []},
     channels: {type: Array, required: true, default: []},
     friends: {type: Array, required: true, default: []},
     friends_requests_received: {type: Array, required: true, default: []},
     friends_requests_sent: {type: Array, required: true, default: []},
-});
+}, 
+{timestamps: true}
+);
 
 
 RevoUserSchema.pre<IUserModel>('save', function (next) {
