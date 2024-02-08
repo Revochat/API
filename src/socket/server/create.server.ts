@@ -25,40 +25,44 @@ export default {
                 roles: ['1', '2']
             });
 
-            // create default roles
-            await Role.create({
-                role_id: "2",
-                role_name: "admin",
-                role_color: "#FF0000",
-                role_members: [user.id],
-                role_position: 0,
-                role_server_id: server.server_id,
-                permissions: {
-                    server: {
-                        admin: true,
-                        messages: {
-                            send: true
+            // if default server roles are not created
+            const defaultRoles = await Role.find({ role_id: { $in: ['1', '2'] } });
+            if(defaultRoles.length !== 2) {
+                // create default roles
+                await Role.create({
+                    role_id: "2",
+                    role_name: "admin",
+                    role_color: "#FF0000",
+                    role_members: [user.id],
+                    role_position: 0,
+                    role_server_id: server.server_id,
+                    permissions: {
+                        server: {
+                            admin: true,
+                            messages: {
+                                send: true
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            await Role.create({
-                role_id: "1",
-                role_name: "member",
-                role_color: "#000000",
-                role_members: [user.id],
-                role_position: 1,
-                role_server_id: server.server_id,
-                permissions: {
-                    server: {
-                        admin: false,
-                        messages: {
-                            send: true
+                await Role.create({
+                    role_id: "1",
+                    role_name: "member",
+                    role_color: "#000000",
+                    role_members: [user.id],
+                    role_position: 1,
+                    role_server_id: server.server_id,
+                    permissions: {
+                        server: {
+                            admin: false,
+                            messages: {
+                                send: true
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // create channel for server
             const channel = await Channel.create({

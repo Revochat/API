@@ -20,30 +20,21 @@ export default {
             if (!server) return socket.emit(UTILS.EVENTS.Server.Delete, { error: "Server not found" });
 
             // check if the user is the owner of the server
-            if (server.owner_id !== user.user_id) {
-                return socket.emit(UTILS.EVENTS.Server.Delete, { error: "You do not have permission to delete this server" });
-            }
+            if (server.owner_id !== user.user_id) return socket.emit(UTILS.EVENTS.Server.Delete, { error: "You do not have permission to delete this server" });
 
             // delete server roles
-            await Role.deleteMany({ role_server_id: data.server_id });
+            await Role.deleteMany({ role_server_id: data.server_id}, {role_id: { $nin: ["1", "2"] } }); // delete all roles except the default roles
 
-            // delete server channels
-            await Channel.deleteMany({ server_id: data.server_id });
+            // remove server from users servers
+            await User.updateOne({ user_id: user.user_id }, { $pull: { servers: data.server_id } }); // remove server from user servers
 
-            // delete server
+            // remove server from server collection
             await Server.deleteOne({ server_id: data.server_id });
 
+            // remove channels from channel collection
+            await Channel.deleteMany({ server_id: data.server_id });
+
             Logger.info(`User ${user.username} (${user.user_id}) deleted server ${data.server_id}`);
-
-            // remove server from user
-            const userDocument = await User.findOne({ user_id: user.user_id });
-            if (!userDocument) return socket.emit(UTILS.EVENTS.Server.Delete, { error: "An error occurred" });
-
-            const serverIndex = userDocument.servers.findIndex((s: any) => s === data.server_id);
-            if (serverIndex !== -1) {
-                userDocument.servers.splice(serverIndex, 1);
-                await userDocument.save();
-            }
 
             // send notification to all members in the server
             socket.to(`server.${server.server_id}`).emit(UTILS.EVENTS.Server.Delete, { server_id: data.server_id });
