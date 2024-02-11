@@ -15,11 +15,11 @@ export namespace EventList {
         Create = "user.create",
         Get = "user.get",
         GetFriends = "user.friends.get",
-        GetFriendsReceived = "user.friends.received.get",
         Connect = "user.connect",
         AddFriend = "user.friend.add",
         RemoveFriend = "user.friend.remove",
         SetAvatar = "user.avatar.set",
+        Update = "user.update",
     }
 
     export enum Server {
