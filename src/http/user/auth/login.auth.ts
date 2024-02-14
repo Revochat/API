@@ -25,7 +25,7 @@ export default {
 
         catch(err) {
             res.status(400)
-            res.send("Test route response");
+            res.send("An error occured")
         }
     }
 }
