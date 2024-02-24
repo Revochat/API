@@ -23,5 +23,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STRING = void 0;
-exports.STRING = __importStar(require("./string"));
+const mongoose_1 = __importStar(require("mongoose"));
+const InviteSchema = new mongoose_1.Schema({
+    server_id: { type: String, required: true, index: true },
+    invite_id: { type: String, required: true, unique: true, index: true },
+    expires_at: { type: Date, required: true, default: Date.now() },
+    uses: { type: Number, required: true },
+    inviter_id: { type: String, required: true, index: true }
+}, { timestamps: true });
+InviteSchema.pre('save', function (next) {
+    if (!this.invite_id) {
+        this.invite_id = this._id.toHexString().toString();
+    }
+    next();
+});
+exports.default = mongoose_1.default.model("Invite", InviteSchema);

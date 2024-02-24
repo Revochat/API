@@ -3,10 +3,10 @@ import { Autoload } from "../autoload";
 export default {
     name: "ping",
     description: "Ping the server!",
-    run: (client: any) => {
+    run: (socket: any) => {
         try {
             Autoload.socket.emit("ping", "pong, hi there!")
-            console.log(client.revo)
+            return
         } catch (error) {
             console.log(error)
         }

@@ -25,23 +25,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const RevoUserSchema = new mongoose_1.Schema({
-    user_id: { type: Number, required: true },
-    identifier: { type: String, required: true },
+    user_id: { type: String, required: false, unique: true },
     token: { type: String, required: true },
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    premium_expiration: { type: Date, required: false, default: null },
     avatar: { type: String, required: false, default: "default" },
-    message_privacy: { type: String, required: true, default: "everyone" },
     status: { type: String, required: true, default: "offline" },
-    updated_at: { type: Date, required: true, default: new Date() },
-    created_at: { type: Date, required: true, default: new Date() },
-    last_connection: { type: Date, required: true, default: new Date() },
     servers: { type: Array, required: true, default: [] },
     channels: { type: Array, required: true, default: [] },
     friends: { type: Array, required: true, default: [] },
     friends_requests_received: { type: Array, required: true, default: [] },
     friends_requests_sent: { type: Array, required: true, default: [] },
-    blocked: { type: Array, required: true, default: [] },
+}, { timestamps: true });
+RevoUserSchema.pre('save', function (next) {
+    if (!this.user_id) {
+        this.user_id = this._id.toHexString().toString();
+    }
+    next();
 });
-exports.default = mongoose_1.default.model("RevoUser", RevoUserSchema);
+exports.default = mongoose_1.default.model("User", RevoUserSchema);

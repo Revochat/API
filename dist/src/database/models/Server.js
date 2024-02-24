@@ -23,5 +23,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STRING = void 0;
-exports.STRING = __importStar(require("./string"));
+const mongoose_1 = __importStar(require("mongoose"));
+const ServerSchema = new mongoose_1.Schema({
+    server_id: { type: String, unique: true, index: true },
+    server_name: { type: String, required: true },
+    server_icon: { type: String, required: false, default: "" },
+    owner_id: { type: String, required: true, index: true },
+    channels: { type: Array, required: false, default: [] },
+    members: { type: Array, required: true },
+    members_count: { type: Number, required: true, default: 1 },
+    banned_users: { type: Array, required: false, default: [] },
+    invite_ids: { type: Array, required: false, default: [] },
+    roles: { type: Array, required: true, default: [] } // permissions for the server
+}, { timestamps: true });
+ServerSchema.pre('save', function (next) {
+    if (!this.server_id) {
+        this.server_id = this._id.toHexString().toString();
+    }
+    next();
+});
+exports.default = mongoose_1.default.model("Server", ServerSchema);

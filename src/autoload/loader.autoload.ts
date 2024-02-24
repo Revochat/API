@@ -17,7 +17,7 @@ dotenv.config()
 export class Autoload { // This is the class that starts the server
     static app: express.Express = express();
     static socket: Socket.Server = new Socket.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3001);
-    static port: number = process.env.HTTP_PORT ? Number(process.env.APP_PORT) : 3000;
+    static port: number = process.env.API_PORT ? Number(process.env.API_PORT) : 3000;
     static baseDir = path.resolve(__dirname, "../socket");
     
     static rateLimitThreshold = 10000; // 10 000 Events par seconde
@@ -25,7 +25,7 @@ export class Autoload { // This is the class that starts the server
     static clients = new Map();
 
     constructor() {
-        Autoload.port = Number(process.env.APP_PORT) || 3000
+        Autoload.port = Number(process.env.API_PORT) || 3000
         //Autoload.app.use(Autoload.rateLimiter)
         Autoload.start()
         Logger.success("Server started on port " + Autoload.port)
@@ -37,7 +37,7 @@ export class Autoload { // This is the class that starts the server
         ${config.ascii.art}
 
         Version: ${config.api.version}
-        Port: ${Number(process.env.APP_PORT) || 3000}
+        Port: ${Number(process.env.API_PORT) || 3000}
         Socket Port: ${Number(process.env.SOCKET_PORT) || 3001}
         `)
         // Owners: ${config.application.owners.join(", ")}
@@ -89,7 +89,7 @@ export class Autoload { // This is the class that starts the server
     
             if (fs.statSync(fullPath).isDirectory()) {
                 Autoload.autoloadRoutesFromDirectory(fullPath);
-            } else if (file.endsWith('.ts')) {
+            } else if (file.endsWith('.ts') || file.endsWith('.js')) {
                 const route = require(fullPath).default;
                 if (route && typeof route.run === 'function' && route.method && route.name) {
                     const httpMethod = route.method.toLowerCase() as keyof express.Application;
@@ -156,12 +156,12 @@ export class Autoload { // This is the class that starts the server
             Autoload.rules()
             Autoload.app.use(express.json()) // This is the middleware that parses the body of the request to JSON format
             Autoload.autoloadRoutesFromDirectory(path.join(__dirname, '../http'));
-            Autoload.port = Number(process.env.APP_PORT) || 3000
+            Autoload.port = Number(process.env.API_PORT) || 3000
             Autoload.app.listen(Autoload.port, () => {
                 Logger.success(`Server started on port ${Autoload.port}`)
             });
 
-            const peerServer = PeerServer({ port: 9005, path: "/myapp" });
+            PeerServer({ port: Number(process.env.PEERJS_PORT) || 9005, path: "/myapp" });
 
             Autoload.socket.on("connection", function (socket: Socket.Socket) {
                 try {

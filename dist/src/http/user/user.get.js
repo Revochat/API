@@ -13,24 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = __importDefault(require("../../database/models/User"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.default = {
-    name: "login",
-    description: "Login to the server",
-    run: function (socket, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!data.username || !data.password)
-                return socket.emit("login", { error: "Missing username or password" });
-            const user = yield User_1.default.findOne({ username: data.username });
-            if (!user)
-                return socket.emit("login", { error: "User not found" });
-            const password = yield bcrypt_1.default.compare(data.password, user.password);
-            if (!password)
-                return socket.emit("login", { error: "Invalid password" });
-            socket.revo.logged = true;
-            socket.revo.user = user;
-            socket.emit("login", { success: "You are now logged in" });
-            return socket;
-        });
-    }
+    name: "/user/get",
+    description: "Get a user",
+    method: "GET",
+    run: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { user_id } = req.params;
+            // Get the token from the request header
+            const token = req.headers["authorization"];
+            // if token or user_id badly formatted
+            if (!token || !user_id)
+                throw "Badly formatted";
+            var user = yield User_1.default.findOne({ id: parseInt(user_id) });
+            if (user) { // if user token is valid
+                if (user.id == parseInt(user_id)) {
+                    res.status(200);
+                    res.send(user);
+                }
+            }
+            throw "User not found";
+        }
+        catch (err) {
+            res.status(400);
+            res.send("Test route response");
+        }
+    })
 };

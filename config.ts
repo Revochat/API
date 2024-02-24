@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const BASE_URI = process.env.BASE_URI;
 const MONGO_USERNAME = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_HOST = process.env.MONGO_HOST;
@@ -21,7 +20,7 @@ export const config = { // This is the config file for the RevoAPI. You can chan
     }, 
 
     properties : {
-        port: Number(process.env.APP_PORT) || 3000,
+        port: Number(process.env.API_PORT) || 3000,
         readyEventTimeout: 500,
     },
     mongo: {
@@ -29,8 +28,7 @@ export const config = { // This is the config file for the RevoAPI. You can chan
         url: (process.env.MONGO_URL?.replace("<USERNAME>", MONGO_USERNAME!).replace("<PASSWORD>", MONGO_PASSWORD!).replace("<HOST>", MONGO_HOST!).replace("<PORT>", MONGO_PORT!) || "mongodb://localhost:27017/Revochat"),
     },
     api : {
-        url : BASE_URI,
-        version : "0.6.9",
+        version : "1",
     },
     ascii: {
         art: `

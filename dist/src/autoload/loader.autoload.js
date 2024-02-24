@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -13,6 +22,9 @@ const config_1 = require("../../config");
 const path_1 = __importDefault(require("path"));
 const socket_struct_autoload_1 = require("./socket_struct.autoload");
 const express_1 = __importDefault(require("express"));
+const User_1 = __importDefault(require("../database/models/User"));
+const Channel_1 = __importDefault(require("../database/models/Channel"));
+const peer_1 = require("peer");
 dotenv_1.default.config();
 class Autoload {
     constructor() {
@@ -57,7 +69,7 @@ class Autoload {
             if (fs_1.default.statSync(fullPath).isDirectory()) {
                 Autoload.autoloadRoutesFromDirectory(fullPath);
             }
-            else if (file.endsWith('.ts')) {
+            else if (file.endsWith('.ts') || file.endsWith('.js')) {
                 const route = require(fullPath).default;
                 if (route && typeof route.run === 'function' && route.method && route.name) {
                     const httpMethod = route.method.toLowerCase();
@@ -80,39 +92,99 @@ class Autoload {
             if (fs_1.default.statSync(fullPath).isDirectory()) {
                 handlers.push(...Autoload.autoloadFilesFromDirectory(fullPath));
             }
-            else if (file.endsWith('.ts')) {
+            else if (file.endsWith('.ts') || file.endsWith('.js')) {
                 const handler = require(fullPath).default;
                 handlers.push(handler);
             }
         }
         return handlers;
     }
-    static attachHandlersToSocket(socket) {
+    static attachHandlersToSocket(socket, newSocket) {
         const handlers = Autoload.autoloadFilesFromDirectory(path_1.default.join(__dirname, '../socket'));
         logger_1.default.info(`Loading ${handlers.length} socket handlers...`);
         for (const handler of handlers) {
             logger_1.default.info(`Loading socket handler ${handler.name}...`);
             if (handler.name && typeof handler.run === 'function') {
                 socket.on(handler.name, (message) => {
-                    Autoload.rateLimiterMiddleware(socket, () => {
-                        handler.run((0, socket_struct_autoload_1.redefineSocket)(socket), message);
-                    });
+                    handler.run(newSocket, message);
                 });
             }
         }
+    }
+    static rules() {
+        Autoload.app.use((req, res, next) => {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header('Content-Type', 'application/json');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            if (req.method === 'OPTIONS') {
+                res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+                return res.status(200).json({});
+            }
+            next();
+        });
     }
     static start() {
         logger_1.default.beautifulSpace();
         logger_1.default.info("Starting server...");
         (0, connect_database_1.default)().then(() => {
-            Autoload.socket.on("connection", function (socket) {
-                Autoload.attachHandlersToSocket(socket);
-            });
+            Autoload.rules();
+            Autoload.app.use(express_1.default.json()); // This is the middleware that parses the body of the request to JSON format
             Autoload.autoloadRoutesFromDirectory(path_1.default.join(__dirname, '../http'));
+            Autoload.port = Number(process.env.APP_PORT) || 3000;
             Autoload.app.listen(Autoload.port, () => {
-                logger_1.default.beautifulSpace();
-                Autoload.logInfo();
-                logger_1.default.beautifulSpace();
+                logger_1.default.success(`Server started on port ${Autoload.port}`);
+            });
+            const peerServer = (0, peer_1.PeerServer)({ port: 9005, path: "/myapp" });
+            Autoload.socket.on("connection", function (socket) {
+                try {
+                    socket.on("user.connect", (data) => __awaiter(this, void 0, void 0, function* () {
+                        logger_1.default.info(`Socket ${socket.id} trying to connect...`);
+                        if (!data)
+                            return socket.emit("user.connect", { error: "Please provide a token" });
+                        const user = yield User_1.default.findOne({ token: data });
+                        if (!user)
+                            return socket.emit("user.connect", { error: "Invalid token" });
+                        user.channels.forEach(channel => socket.join(channel));
+                        // set the user as connected
+                        user.status = "online";
+                        yield user.save();
+                        // populate the user with the channels data
+                        user.channels = yield Channel_1.default.find({ channel_id: { $in: user.channels } });
+                        // populate members of the channels
+                        for (let i = 0; i < user.channels.length; i++) {
+                            const channel = user.channels[i];
+                            channel.members = yield User_1.default.find({ user_id: { $in: channel.members } });
+                            user.channels[i] = channel;
+                        }
+                        // populate the user with the friends data
+                        user.friends = yield User_1.default.find({ user_id: { $in: user.friends } });
+                        socket.join(user.user_id); // join the user socket room
+                        socket.emit("user.connect", user);
+                        const newSocket = (0, socket_struct_autoload_1.redefineSocket)(socket, user);
+                        Autoload.attachHandlersToSocket(socket, newSocket);
+                        logger_1.default.info(`Socket ${socket.id} connected.`);
+                    }));
+                    socket.on("disconnect", () => {
+                        // set the user as disconnected
+                        const newSocket = socket;
+                        if (!newSocket.revo || !newSocket.revo.user) {
+                            return socket.disconnect(true), socket.emit("user.connect", { error: "An error occured while disconnecting" }), logger_1.default.warn(`Socket ${socket.id} disconnected.`);
+                        }
+                        const user_id = newSocket.revo.user.user_id;
+                        User_1.default.findOne({ user_id }).then(user => {
+                            if (!user)
+                                return;
+                            user.status = "offline";
+                            user.save();
+                        });
+                        logger_1.default.warn(`Socket ${socket.id} disconnected.`);
+                        socket.disconnect(true);
+                    });
+                }
+                catch (error) {
+                    logger_1.default.error(error);
+                    socket.emit("user.connect", { error: "An error occured" });
+                }
             });
             logger_1.default.beautifulSpace();
             Autoload.logInfo();
@@ -125,9 +197,10 @@ class Autoload {
 }
 exports.Autoload = Autoload;
 Autoload.app = (0, express_1.default)();
-Autoload.socket = new socket_io_1.default.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3000);
+Autoload.socket = new socket_io_1.default.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3001);
+Autoload.port = process.env.HTTP_PORT ? Number(process.env.APP_PORT) : 3000;
 Autoload.baseDir = path_1.default.resolve(__dirname, "../socket");
-Autoload.rateLimitThreshold = 10000; // 5 Events par seconde
+Autoload.rateLimitThreshold = 10000; // 10 000 Events par seconde
 Autoload.rateLimitDuration = 10000; // 1 seconde
 Autoload.clients = new Map();
 Autoload.logInfo = () => {
@@ -137,6 +210,7 @@ Autoload.logInfo = () => {
 
         Version: ${config_1.config.api.version}
         Port: ${Number(process.env.APP_PORT) || 3000}
+        Socket Port: ${Number(process.env.SOCKET_PORT) || 3001}
         `);
     // Owners: ${config.application.owners.join(", ")}
 };

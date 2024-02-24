@@ -23,5 +23,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STRING = void 0;
-exports.STRING = __importStar(require("./string"));
+const mongoose_1 = __importStar(require("mongoose"));
+const MessageSchema = new mongoose_1.Schema({
+    message_id: { type: String, unique: true, index: true, default: "" },
+    user_id: { type: String, required: true },
+    channel_id: { type: String, required: true, index: true },
+    message: { type: String, required: true },
+}, { timestamps: true });
+MessageSchema.pre('save', function (next) {
+    if (!this.message_id) {
+        this.message_id = this._id.toHexString().toString();
+    }
+    next();
+});
+exports.default = mongoose_1.default.model("Message", MessageSchema);
