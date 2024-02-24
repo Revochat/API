@@ -19,6 +19,8 @@ export default {
 
             const friend = await User.findOne({ username: data.username }); // find the friend
             if(!friend) return socket.emit(UTILS.EVENTS.User.AddFriend, { error: "User not found" });
+
+            if(userDocument.user_id === friend.user_id) return socket.emit(UTILS.EVENTS.User.AddFriend, { error: "You can't add yourself as a friend" });
     
             if(userDocument.friends.includes(friend.user_id)) return socket.emit(UTILS.EVENTS.User.AddFriend, { error: "You are already friends with " + friend.username });
 

@@ -14,6 +14,7 @@ export namespace EventList {
     export enum User {
         Create = "user.create",
         Get = "user.get",
+        GetChannelList = "user.channels.get",
         GetFriends = "user.friends.get",
         Connect = "user.connect",
         AddFriend = "user.friend.add",
