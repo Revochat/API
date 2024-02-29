@@ -7,7 +7,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const BASE_URI = process.env.BASE_URI;
 const MONGO_USERNAME = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_HOST = process.env.MONGO_HOST;
@@ -25,7 +24,7 @@ exports.config = {
         ],
     },
     properties: {
-        port: Number(process.env.APP_PORT) || 3000,
+        port: Number(process.env.API_PORT) || 3000,
         readyEventTimeout: 500,
     },
     mongo: {
@@ -33,8 +32,7 @@ exports.config = {
         url: (((_a = process.env.MONGO_URL) === null || _a === void 0 ? void 0 : _a.replace("<USERNAME>", MONGO_USERNAME).replace("<PASSWORD>", MONGO_PASSWORD).replace("<HOST>", MONGO_HOST).replace("<PORT>", MONGO_PORT)) || "mongodb://localhost:27017/Revochat"),
     },
     api: {
-        url: BASE_URI,
-        version: "0.6.9",
+        version: "1",
     },
     ascii: {
         art: `

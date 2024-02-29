@@ -28,7 +28,7 @@ const peer_1 = require("peer");
 dotenv_1.default.config();
 class Autoload {
     constructor() {
-        Autoload.port = Number(process.env.APP_PORT) || 3000;
+        Autoload.port = Number(process.env.API_PORT) || 3000;
         //Autoload.app.use(Autoload.rateLimiter)
         Autoload.start();
         logger_1.default.success("Server started on port " + Autoload.port);
@@ -130,11 +130,11 @@ class Autoload {
             Autoload.rules();
             Autoload.app.use(express_1.default.json()); // This is the middleware that parses the body of the request to JSON format
             Autoload.autoloadRoutesFromDirectory(path_1.default.join(__dirname, '../http'));
-            Autoload.port = Number(process.env.APP_PORT) || 3000;
+            Autoload.port = Number(process.env.API_PORT) || 3000;
             Autoload.app.listen(Autoload.port, () => {
                 logger_1.default.success(`Server started on port ${Autoload.port}`);
             });
-            const peerServer = (0, peer_1.PeerServer)({ port: 9005, path: "/myapp" });
+            (0, peer_1.PeerServer)({ port: Number(process.env.PEERJS_PORT) || 9005, path: "/myapp" });
             Autoload.socket.on("connection", function (socket) {
                 try {
                     socket.on("user.connect", (data) => __awaiter(this, void 0, void 0, function* () {
@@ -198,7 +198,7 @@ class Autoload {
 exports.Autoload = Autoload;
 Autoload.app = (0, express_1.default)();
 Autoload.socket = new socket_io_1.default.Server(process.env.SOCKET_PORT ? Number(process.env.SOCKET_PORT) : 3001);
-Autoload.port = process.env.HTTP_PORT ? Number(process.env.APP_PORT) : 3000;
+Autoload.port = process.env.API_PORT ? Number(process.env.API_PORT) : 3000;
 Autoload.baseDir = path_1.default.resolve(__dirname, "../socket");
 Autoload.rateLimitThreshold = 10000; // 10 000 Events par seconde
 Autoload.rateLimitDuration = 10000; // 1 seconde
@@ -209,7 +209,7 @@ Autoload.logInfo = () => {
         ${config_1.config.ascii.art}
 
         Version: ${config_1.config.api.version}
-        Port: ${Number(process.env.APP_PORT) || 3000}
+        Port: ${Number(process.env.API_PORT) || 3000}
         Socket Port: ${Number(process.env.SOCKET_PORT) || 3001}
         `);
     // Owners: ${config.application.owners.join(", ")}
