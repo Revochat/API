@@ -48,20 +48,21 @@ export default {
 
                 await userDocument.save(); // save the user document
                 await friend.save(); // save the friend document
-                socket.emit(UTILS.EVENTS.User.AddFriend, { success: "You are now friends with " + friend.username }); // send a success message to the user
                 socket.to(friend.user_id).emit(UTILS.EVENTS.User.AddFriend, { success: "You are now friends with " + user.username }); // send a success message to the friend
+
+                socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: userDocument }); // send the updated user to the user
+                socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
+
             } else { // if the user doesn't have a friend request from the friend
                 userDocument.friends_requests_sent.push(friend.user_id); // add the friend to the user's friend requests sent
                 friend.friends_requests_received.push(user.user_id); // add the user to the friend's friend requests received
                 await userDocument.save(); // save the user document
                 await friend.save(); // save the friend document
-                socket.emit(UTILS.EVENTS.User.AddFriend, { success: "You sent a friend request to " + friend.username }); // send a success message to the user
                 socket.to(friend.user_id).emit(UTILS.EVENTS.User.AddFriend, { success: user.username + " sent you a friend request" }); // send a success message to the friend
-            }
 
-            // send the updated user to the user and the friend
-            socket.to(user.user_id).emit(UTILS.EVENTS.User.Update, { user: userDocument });
-            socket.to(friend.user_id).emit(UTILS.EVENTS.User.Update, { user: friend }); // send the updated user to the friend
+                socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsSent, { user: userDocument }); // send the updated user to the user
+                socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsReceived, { user: friend }); // send the updated user to the friend
+            }
         }
         catch (error) {
             console.log(error)

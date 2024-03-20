@@ -30,6 +30,10 @@ export default {
                 await friend.save();
                 
                 socket.emit(UTILS.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} friend request` });
+
+                socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsSent, { user: user });
+                socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsReceived, { user: friend }); // send the updated user to the friend
+                
             } else if (userRequestIndex !== -1) { // check if friend has a friend request from user and remove it
                 friend.friends_requests_received.splice(userRequestIndex, 1);
                 user.friends_requests_sent.splice(user.friends_requests_sent.indexOf(friend.user_id), 1);
@@ -37,6 +41,9 @@ export default {
                 await friend.save();
                 
                 socket.emit(UTILS.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} friend request` });
+
+                socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: user });
+                socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
             } else { // they are friends, remove them from each other's friend list
 
                 const friendIndex = user.friends.findIndex((f: any) => f === friend.user_id); 
@@ -73,8 +80,8 @@ export default {
             }
 
             // send the updated user to the user and the friend
-            socket.to(user.user_id).emit(UTILS.EVENTS.User.Update, { user: user });
-            socket.to(friend.user_id).emit(UTILS.EVENTS.User.Update, { user: friend }); // send the updated user to the friend
+            socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: user });
+            socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
         } catch (error) {
             console.error("Error in remove.friend:", error);
             socket.emit(UTILS.EVENTS.User.RemoveFriend, { error: "Internal server error" });

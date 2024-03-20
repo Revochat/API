@@ -10,5 +10,10 @@ export default {
     VERIFY: {
         STRING: STRING
     },
-    EVENTS: EventList
+    EVENTS: EventList,
+    removeSensitiveData: (data: any) => {
+        if(data.password) data.password = "hidden";
+        if(data.token) data.token = "hidden";
+        return data;
+    }
 }
