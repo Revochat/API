@@ -40,6 +40,7 @@ export default {
                     channels.push({
                         channel_id: channel._id,
                         name: channel.channel_name,
+                        avatar: user.avatar,
                         members: users,
                         lastMessage: lastMessage
                     });
