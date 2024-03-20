@@ -58,8 +58,6 @@ export default {
                 friend.friends_requests_received.push(user.user_id); // add the user to the friend's friend requests received
                 await userDocument.save(); // save the user document
                 await friend.save(); // save the friend document
-                socket.to(friend.user_id).emit(UTILS.EVENTS.User.AddFriend, { success: user.username + " sent you a friend request" }); // send a success message to the friend
-
                 socket.to(user.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsSent, { user: userDocument }); // send the updated user to the user
                 socket.to(friend.user_id).emit(UTILS.EVENTS.User.GetFriendRequestsReceived, { user: friend }); // send the updated user to the friend
             }
