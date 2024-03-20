@@ -26,7 +26,8 @@ export default {
                         if (user) {
                             users.push({
                                 username: user.username,
-                                user_id: user._id
+                                user_id: user._id,
+                                avatar: user.avatar
                             });
                         }
                     }
@@ -40,7 +41,6 @@ export default {
                     channels.push({
                         channel_id: channel._id,
                         name: channel.channel_name,
-                        avatar: user.avatar,
                         members: users,
                         lastMessage: lastMessage
                     });
