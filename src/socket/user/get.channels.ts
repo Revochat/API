@@ -1,33 +1,57 @@
+import Channel from "../../database/models/Channel";
 import User from "../../database/models/User";
 import Logger from "../../logger";
 import UTILS from "../../utils";
+import Message from "../../database/models/Message";
 
 export default {
-    name: UTILS.EVENTS.User.GetChannelList,
+    name: UTILS.EVENTS.User.GetChannels,
     description: "Get the user's channels",
     run: async function (socket: any, data: any) {
         try {
             if(!socket.revo.logged) return socket.emit(UTILS.EVENTS.User.Get, { error: "You are not logged in" });
-            Logger.info(`[Socket] ${socket.revo.user.username} is trying to user.get ect to the server...`);
+            Logger.info(`[Socket] ${socket.revo.user.username} is trying to get their channels`)
     
             const user = await User.findOne({ token: socket.revo.user.token }); // find the user
             if (!user) return socket.emit(UTILS.EVENTS.User.Get, { error: "Invalid token" });
 
-            // get the user's channels with aggregate
-            const channels = await User.aggregate([
-                { $match: { token: socket.revo.user.token } },
-                { $unwind: "$channels" },
-                { $lookup: { from: "channels", localField: "channels", foreignField: "_id", as: "channels" } },
-                { $unwind: "$channels" },
-                { $project: { _id: 0, channels: 1 } }
-            ]);
+            let channels = [];
+            for (let i = 0; i < user.channels.length; i++) {
+                const channel = await Channel.findOne({ _id: user.channels[i] });
+                if (channel) {
+                    // get the users from the channel
+                    let users = [];
+                    for (let j = 0; j < channel.members.length; j++) {
+                        const user = await User.findOne({ _id: channel.members[j] });
+                        if (user) {
+                            users.push({
+                                username: user.username,
+                                user_id: user._id
+                            });
+                        }
+                    }
+                    // get last message from channel
+                    let lastMessage = null;
+                    // get number of messages in message collection
+                    const messages = await Message.find({ channel_id: channel._id }).sort({ createdAt: -1 }).limit(1);
+                    if (messages.length > 0) {
+                        lastMessage = messages[0];
+                    }
+                    channels.push({
+                        channel_id: channel._id,
+                        name: channel.channel_name,
+                        members: users,
+                        lastMessage: lastMessage
+                    });
 
-            user.channels = channels.map((channel: any) => channel.channels); // set the user's channels
+                    channels.push(channel);
+                }
+            }
     
-            socket.emit(UTILS.EVENTS.User.GetChannelList, user ); // send a success message to the user
+            socket.emit(UTILS.EVENTS.User.GetChannels, channels);
         } catch (error) {
             Logger.error(error)
-            socket.emit(UTILS.EVENTS.User.GetChannelList, {error:"An error occured"})
+            socket.emit(UTILS.EVENTS.User.GetChannels, {error:"An error occured"})
         }
     }
 }

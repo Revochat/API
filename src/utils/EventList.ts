@@ -8,13 +8,14 @@ export namespace EventList {
     export enum Channel {
         Create = "channel.create",
         Get = "channel.get",
+        GetAll = "channel.get.all",
         Join = "channel.join",
     }
 
     export enum User {
         Create = "user.create",
         Get = "user.get",
-        GetChannelList = "user.channels.get",
+        GetChannels = "user.channels.get",
         GetFriends = "user.friends.get",
         Connect = "user.connect",
         AddFriend = "user.friend.add",
