@@ -43,8 +43,6 @@ export default {
                         members: users,
                         lastMessage: lastMessage
                     });
-
-                    channels.push(channel);
                 }
             }
     
