@@ -9,11 +9,11 @@ export default {
     description: "Get the user's friends list",
     run: async function (socket: any, data: any) {
         try {
-            if(!socket.revo.logged) return socket.emit(UTILS.EVENTS.User.Get, { error: "You are not logged in" });
+            if(!socket.revo.logged) return socket.emit(UTILS.EVENTS.User.GetFriendsList, { error: "You are not logged in" });
             Logger.info(`[Socket] ${socket.revo.user.username} is trying to get their channels`)
     
             const user = await User.findOne({ token: socket.revo.user.token }); // find the user
-            if (!user) return socket.emit(UTILS.EVENTS.User.Get, { error: "Invalid token" });
+            if (!user) return socket.emit(UTILS.EVENTS.User.GetFriendsList, { error: "Invalid token" });
 
             const friends = await User.find({ user_id: { $in: user.friends } });
             if (!friends) return socket.emit(UTILS.EVENTS.User.GetFriendsList, { error: "No friends found" });

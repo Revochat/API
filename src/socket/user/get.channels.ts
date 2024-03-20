@@ -37,7 +37,17 @@ export default {
                     const messages = await Message.find({ channel_id: channel._id }).sort({ createdAt: -1 }).limit(1);
                     if (messages.length > 0) {
                         lastMessage = messages[0];
+                        lastMessage = lastMessage.toObject();
                     }
+
+                    // sort channels by last message date (newest first)
+                    // channels.sort((a, b) => {
+                    //     if (!a.lastMessage || !b.lastMessage) return 0;
+                    //     if (a.lastMessage.createdAt > b.lastMessage.createdAt) return -1;
+                    //     if (a.lastMessage.createdAt < b.lastMessage.createdAt) return 1;
+                    //     return 0;
+                    // });
+
                     channels.push({
                         channel_id: channel._id,
                         name: channel.channel_name,
