@@ -27,7 +27,8 @@ export default {
                             users.push({
                                 username: user.username,
                                 user_id: user._id,
-                                avatar: user.avatar
+                                avatar: user.avatar,
+                                status: user.status
                             });
                         }
                     }
