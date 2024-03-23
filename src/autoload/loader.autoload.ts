@@ -11,6 +11,7 @@ import express from "express";
 import User from "../database/models/User";
 import Channel from "../database/models/Channel";
 import { PeerServer } from "peer";
+import UTILS from "../utils";
 
 dotenv.config()
 
@@ -188,6 +189,9 @@ export class Autoload { // This is the class that starts the server
                         
                         // populate the user with the friends data
                         user.friends = await User.find({user_id: {$in: user.friends}})
+                        user.friends.map(friend => {
+                            UTILS.removeSensitiveData(friend)
+                        })
 
                         socket.join(user.user_id) // join the user socket room
                         socket.emit("user.connect", user)
