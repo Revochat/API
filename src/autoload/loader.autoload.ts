@@ -143,7 +143,7 @@ export class Autoload { // This is the class that starts the server
             res.header('Content-Type', 'application/json')
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
             if (req.method === 'OPTIONS') {
-                res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+                res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
                 return res.status(200).json({})
             }
             next()

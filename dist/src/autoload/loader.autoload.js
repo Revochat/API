@@ -25,6 +25,7 @@ const express_1 = __importDefault(require("express"));
 const User_1 = __importDefault(require("../database/models/User"));
 const Channel_1 = __importDefault(require("../database/models/Channel"));
 const peer_1 = require("peer");
+const utils_1 = __importDefault(require("../utils"));
 dotenv_1.default.config();
 class Autoload {
     constructor() {
@@ -158,6 +159,9 @@ class Autoload {
                         }
                         // populate the user with the friends data
                         user.friends = yield User_1.default.find({ user_id: { $in: user.friends } });
+                        user.friends.map(friend => {
+                            utils_1.default.removeSensitiveData(friend);
+                        });
                         socket.join(user.user_id); // join the user socket room
                         socket.emit("user.connect", user);
                         const newSocket = (0, socket_struct_autoload_1.redefineSocket)(socket, user);

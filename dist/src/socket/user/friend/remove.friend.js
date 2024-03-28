@@ -41,6 +41,8 @@ exports.default = {
                     yield user.save();
                     yield friend.save();
                     socket.emit(utils_1.default.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} friend request` });
+                    socket.emit(utils_1.default.EVENTS.User.GetFriendRequestsSent, { user: user });
+                    socket.to(friend.user_id).emit(utils_1.default.EVENTS.User.GetFriendRequestsReceived, { user: friend }); // send the updated user to the friend
                 }
                 else if (userRequestIndex !== -1) { // check if friend has a friend request from user and remove it
                     friend.friends_requests_received.splice(userRequestIndex, 1);
@@ -48,6 +50,8 @@ exports.default = {
                     yield user.save();
                     yield friend.save();
                     socket.emit(utils_1.default.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} friend request` });
+                    socket.emit(utils_1.default.EVENTS.User.GetFriends, { user: user });
+                    socket.to(friend.user_id).emit(utils_1.default.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
                 }
                 else { // they are friends, remove them from each other's friend list
                     const friendIndex = user.friends.findIndex((f) => f === friend.user_id);
@@ -68,16 +72,18 @@ exports.default = {
                     yield friend.save();
                     // delete all messages between user and friend
                     yield Message_1.default.deleteMany({ $or: [{ from: user.user_id, to: friend.user_id }, { from: friend.user_id, to: user.user_id }] });
-                    // remove channel between user and friend
-                    socket.leave(friend.user_id);
-                    socket.leave(user.user_id);
+                    // remove channel from socket rooms
+                    socket.leave(channelToRemove.channel_id);
+                    socket.to(friend.user_id).leave(channelToRemove.channel_id);
                     // remove channel from channels collection
                     yield Channel_1.default.findOneAndDelete({ channel_id: channelToRemove.channel_id });
                     socket.emit(utils_1.default.EVENTS.User.RemoveFriend, { success: `You removed ${friend.username} from your friends` });
+                    socket.emit(utils_1.default.EVENTS.User.GetFriends, { user: user });
+                    socket.to(friend.user_id).emit(utils_1.default.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
                 }
                 // send the updated user to the user and the friend
-                socket.to(user.user_id).emit(utils_1.default.EVENTS.User.Update, { user: user });
-                socket.to(friend.user_id).emit(utils_1.default.EVENTS.User.Update, { user: friend }); // send the updated user to the friend
+                socket.emit(utils_1.default.EVENTS.User.GetFriends, { user: user });
+                socket.to(friend.user_id).emit(utils_1.default.EVENTS.User.GetFriends, { user: friend }); // send the updated user to the friend
             }
             catch (error) {
                 console.error("Error in remove.friend:", error);
